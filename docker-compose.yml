@@ -1,0 +1,19 @@
+version: "3"
+services:
+  backend:
+    container_name: backend
+    build: .
+    image: backend
+    ports:
+      - "8086:8086"
+    environment:
+      - MYSQL_DATABASE=ProductCase
+      - MYSQL_USER=test221
+      - MYSQL_ROOT_PASSWORD=test
+    volumes:
+      - ~/imagestorage:/product-images
+
+networks:
+  default:
+    external:
+      name: int221_network

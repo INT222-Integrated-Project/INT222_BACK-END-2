@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.*;
 
-@JsonIgnoreProperties({"colors"})
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -31,11 +31,12 @@ public class Products {
 	// ONE TO ONE
 	private int sellerID;
 
-	@JsonFormat(pattern = "yyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private String caseDate;
 
 	@ManyToMany
-	//@JoinTable(name = "productscolor", joinColumns = @JoinColumn(name = "caseID"), inverseJoinColumns = @JoinColumn(name = "productCaseId"))
+	@JoinTable(name = "productscolor", joinColumns = @JoinColumn
+	(name = "caseID", referencedColumnName = "caseID"), inverseJoinColumns = @JoinColumn(name = "codeColor" , referencedColumnName = "codeColor"))
 	private List<Colors> colors;
 
 }

@@ -1,35 +1,25 @@
-package swst.application.models;
-
-import java.util.List;
+package swst.application.models_users;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@JsonIgnoreProperties({"products"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "colors")
-public class Colors {
+@Table(name = "roles")
+public class Roles {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int codeColor;
+	private int roleID;
 	
-	private String caseColor;
-	
-	@ManyToMany
-	private List<Products> products;
-
+	private String roleName;
 }

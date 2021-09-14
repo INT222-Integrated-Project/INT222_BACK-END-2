@@ -7,11 +7,11 @@ import lombok.Data;
 
 @Embeddable
 @Data
-public class ProductsColorRelationKey implements Serializable {
+public class ProductModelRelationKey implements Serializable {
 
+	@Column(name = "modelID")
+	private int modelID;
 	@Column(name = "caseID")
-	int caseID;
-	@Column(name = "codeColor")
-	int codeColor;
+	private int caseID;
 
 }

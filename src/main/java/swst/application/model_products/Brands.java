@@ -1,4 +1,4 @@
-package swst.application.models;
+package swst.application.model_products;
 
 import javax.persistence.*;
 import lombok.*;

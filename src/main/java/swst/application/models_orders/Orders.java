@@ -1,4 +1,4 @@
-package swst.application.models;
+package swst.application.models_orders;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,8 +31,9 @@ public class Orders {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private String paymentDate;
 	
-	@OneToOne
+	
+	/*@OneToOne
 	private Status statusID;
-	private int customerID;
-
+	private int userNameID;
+*/
 }

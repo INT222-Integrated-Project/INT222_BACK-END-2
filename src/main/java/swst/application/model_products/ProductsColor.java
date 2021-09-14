@@ -1,4 +1,4 @@
-package swst.application.models;
+package swst.application.model_products;
 
 import javax.persistence.*;
 
@@ -18,14 +18,15 @@ public class ProductsColor {
 	private ProductsColorRelationKey id;
 
 	private String imageCase;
+	private int quantity;
 
 	@ManyToOne
-	@MapsId("caseID")
+	@MapsId(value = "caseID")
 	@JoinColumn(name = "caseID", referencedColumnName = "caseID")
 	private Products caseID;
 
 	@ManyToOne
-	@MapsId("codeColor")
+	@MapsId(value ="codeColor")
 	@JoinColumn(name = "codeColor" , referencedColumnName = "codeColor")
 	private Colors codeColor;
 }

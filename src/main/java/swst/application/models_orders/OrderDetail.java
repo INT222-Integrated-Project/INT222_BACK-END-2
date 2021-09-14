@@ -1,4 +1,4 @@
-package swst.application.models;
+package swst.application.models_orders;
 
 import javax.persistence.*;
 import swst.application.relationkeyclasses.OrderDetailRelationKey;
@@ -15,7 +15,8 @@ public class OrderDetail {
 	@EmbeddedId
 	private OrderDetailRelationKey id;
 	
-	private int quntityOrder;
+	@Column(name = "quanityOrder")
+	private int quantityyOrder;
 	private float unitPrice;
 	
 	//@ManyToOne

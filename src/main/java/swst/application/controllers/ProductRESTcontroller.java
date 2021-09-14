@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import swst.application.models.Products;
-import swst.application.models.ProductsColor;
+import swst.application.model_products.Products;
+import swst.application.model_products.ProductsColor;
 import swst.application.repositories.ProductsColorRepository;
 import swst.application.repositories.ProductsRepository;
 

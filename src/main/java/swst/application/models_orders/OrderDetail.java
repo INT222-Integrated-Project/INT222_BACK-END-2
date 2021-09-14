@@ -15,8 +15,7 @@ public class OrderDetail {
 	@EmbeddedId
 	private OrderDetailRelationKey id;
 	
-	@Column(name = "quanityOrder")
-	private int quantityyOrder;
+	private int quantityOrder;
 	private float unitPrice;
 	
 	//@ManyToOne

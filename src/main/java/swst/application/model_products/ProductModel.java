@@ -24,8 +24,6 @@ public class ProductModel {
 	@EmbeddedId
 	private ProductModelRelationKey id;
 	
-	@Column(name = "qauntity")
-	private int quantity;
 	/*
 	@ManyToOne
 	@MapsId(value = "caseID")

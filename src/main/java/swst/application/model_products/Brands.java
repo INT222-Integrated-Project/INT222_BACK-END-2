@@ -1,5 +1,7 @@
 package swst.application.model_products;
 
+import java.util.List;
+
 import javax.persistence.*;
 import lombok.*;
 
@@ -15,4 +17,5 @@ public class Brands {
 	private int codeBrand;
 	
 	private String caseBrand;
+	
 }

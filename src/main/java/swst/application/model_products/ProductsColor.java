@@ -2,6 +2,8 @@ package swst.application.model_products;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,12 +21,13 @@ public class ProductsColor {
 
 	private String imageCase;
 	private int quantity;
-
+	
+	/*@JsonIgnore
 	@ManyToOne
 	@MapsId(value = "caseID")
 	@JoinColumn(name = "caseID", referencedColumnName = "caseID")
 	private Products caseID;
-
+*/
 	@ManyToOne
 	@MapsId(value ="codeColor")
 	@JoinColumn(name = "codeColor" , referencedColumnName = "codeColor")

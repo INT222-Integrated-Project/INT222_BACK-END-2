@@ -1,14 +1,17 @@
 package swst.application.model_products;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -28,8 +31,9 @@ public class Colors {
 	private int codeColor;
 	
 	private String caseColor;
-	/*
-	@ManyToMany
-	private List<Products> products;*/
+	
+	@OneToMany(mappedBy = "colors")
+	@JsonIgnore
+	private Set<Products> products;
 
 }

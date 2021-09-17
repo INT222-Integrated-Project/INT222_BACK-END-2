@@ -71,7 +71,7 @@ public class RESTapiTestingSite {
 		return colorsRepository.findAll();
 	}
 
-	@RequestMapping("/productcolors")
+	@RequestMapping("/productsColor")
 	public List<ProductsColor> fineAllProdColor() {
 		return productsColorRepository.findAll();
 	}

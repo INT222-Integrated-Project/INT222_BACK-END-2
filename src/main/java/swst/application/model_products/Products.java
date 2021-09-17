@@ -6,7 +6,6 @@ import java.util.Set;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.*;
 
@@ -37,9 +36,6 @@ public class Products {
 	@ManyToMany
 	@JoinTable(name = "productmodel", joinColumns = @JoinColumn(name = "caseID", referencedColumnName = "caseID"), inverseJoinColumns = @JoinColumn(name = "modelID", referencedColumnName = "modelID"))
 	private List<Models> models;
-	
-	/*@OneToMany(mappedBy = "student")
-	private Set<ProductModel> productModels;*/
 	
 	private String productImage;
 

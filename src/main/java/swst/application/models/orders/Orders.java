@@ -1,4 +1,4 @@
-package swst.application.models_orders;
+package swst.application.models.orders;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

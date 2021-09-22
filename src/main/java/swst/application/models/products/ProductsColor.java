@@ -1,4 +1,4 @@
-package swst.application.model_products;
+package swst.application.models.products;
 
 import javax.persistence.*;
 
@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import swst.application.relationkeyclasses.ProductsColorRelationKey;
+import swst.application.models.relationkey.ProductsColorRelationKey;
 
 @AllArgsConstructor
 @NoArgsConstructor

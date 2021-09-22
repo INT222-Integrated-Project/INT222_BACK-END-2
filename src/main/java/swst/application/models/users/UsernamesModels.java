@@ -1,10 +1,14 @@
-package swst.application.models_users;
+package swst.application.models.users;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,25 +26,26 @@ public class UsernamesModels {
 	private int userNameID;
 
 	private String userName;
+	@JsonIgnore
 	private String userPassword;
-
-/*	@Basic(optional = true)
-	@Column(name = "sellerID", nullable = true)
-	private int sellerID;
-	
-	@Basic(optional = true)
-	@Column(name = "customerID", nullable = true)
-	private int customerID;*/
 
 	private int roleID;
 	
-	/*@OneToOne(mappedBy = "username", cascade = CascadeType.ALL)
-	private Customers customer;*/
-/*
-	@JoinColumn(name = "sellerID", referencedColumnName = "sellerID")
-	private Sellers seller;*/
+	private String firstName;
+	private String lastName;
 	
-	/*@OneToOne
-	@JoinColumn(name = "roleID", referencedColumnName = "roleID")
-	private Roles role;*/
+	@Basic(optional = true)
+	@Column(nullable = true)
+	private String email;
+	
+	private String phoneNumber;
+	
+	@Basic(optional = true)
+	@Column(name = "cusImage", nullable = true)
+	private String profileImage;
+	
+	@Basic(optional = true)
+	@Column(nullable = true)
+	private String address;
+	
 }

@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import swst.application.exceptionhandlers.ExceptionDetails;
 import swst.application.exceptionhandlers.ExceptionFoundation;
-import swst.application.model_products.Products;
-import swst.application.model_products.ProductsColor;
+import swst.application.models.products.Products;
+import swst.application.models.products.ProductsColor;
 import swst.application.repositories.ProductsColorRepository;
 import swst.application.repositories.ProductsRepository;
 

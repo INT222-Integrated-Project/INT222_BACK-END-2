@@ -1,4 +1,4 @@
-package swst.application.relationkeyclasses;
+package swst.application.models.relationkey;
 
 import java.io.Serializable;
 import javax.persistence.Column;

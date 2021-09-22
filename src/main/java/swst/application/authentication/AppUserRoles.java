@@ -1,4 +1,4 @@
-package swst.application.appusers;
+package swst.application.authentication;
 
 public enum AppUserRoles {
 	USER,

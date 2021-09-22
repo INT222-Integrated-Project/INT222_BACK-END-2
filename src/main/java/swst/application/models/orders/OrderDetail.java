@@ -1,9 +1,9 @@
-package swst.application.models_orders;
+package swst.application.models.orders;
 
 import javax.persistence.*;
-import swst.application.relationkeyclasses.OrderDetailRelationKey;
 
 import lombok.*;
+import swst.application.models.relationkey.OrderDetailRelationKey;
 
 @AllArgsConstructor
 @NoArgsConstructor

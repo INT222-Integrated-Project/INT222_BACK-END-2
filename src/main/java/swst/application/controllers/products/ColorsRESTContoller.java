@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import swst.application.model_products.Colors;
+import swst.application.models.products.Colors;
 import swst.application.repositories.ColorsRepository;
 
 @RestController

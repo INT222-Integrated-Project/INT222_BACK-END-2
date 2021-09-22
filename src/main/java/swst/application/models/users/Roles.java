@@ -1,4 +1,4 @@
-package swst.application.models_orders;
+package swst.application.models.users;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "status")
-public class OrderStatus {
+@Table(name = "roles")
+public class Roles {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int statusID;
+	private int roleID;
 	
-	private String status;
+	private String roleName;
 }

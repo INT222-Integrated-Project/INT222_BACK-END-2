@@ -1,4 +1,4 @@
-package swst.application.model_products;
+package swst.application.models.products;
 
 import java.util.List;
 import java.util.Set;

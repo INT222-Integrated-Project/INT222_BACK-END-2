@@ -10,6 +10,7 @@ public class ExceptionDetails {
 		// Searching
 		SEARCH_NOT_FOUND(1001), // Resource not found.
 		SEARCH_CAN_NOT_READ(1002), // Cab't read, for some reason...
+		SEARCH_NO_PAGE_HERE(1003), //When there are 5 pages available but user goes for 6.
 
 		// Saving
 		SAVE_IMAGE_FAILED(2001), // Can't save image.

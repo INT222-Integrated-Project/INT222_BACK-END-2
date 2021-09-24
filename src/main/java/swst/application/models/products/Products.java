@@ -38,5 +38,7 @@ public class Products {
 	private List<Models> models;
 	
 	private String productImage;
+	
+	private int isOnStore;
 
 }

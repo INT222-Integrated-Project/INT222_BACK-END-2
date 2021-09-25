@@ -3,6 +3,7 @@ package swst.application;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,7 @@ import swst.application.repositories.ProductsRepository;
 import swst.application.repositories.RolesRepository;
 import swst.application.repositories.StatusRepository;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/test")
 public class RESTapiTestingSite {

@@ -30,6 +30,7 @@ import swst.application.models.products.ProductsColor;
 import swst.application.repositories.ProductsColorRepository;
 import swst.application.repositories.ProductsRepository;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/public/products")
 public class ProductsRESTcontroller {

@@ -42,26 +42,25 @@ public class ProductsRESTcontroller {
 	@GetMapping("")
 	public ResponseEntity<Map<String, Object>> findByOnStore(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size) {
-			List<Products> productList = new ArrayList<Products>();
-			Pageable paging = PageRequest.of(page, size);
+		List<Products> productList = new ArrayList<Products>();
+		Pageable paging = PageRequest.of(page, size);
 
-			Page<Products> pageOfProducts = productsRepository.findByIsOnStore(0, paging);
-			productList = pageOfProducts.getContent();
-			
-			if(pageOfProducts.getTotalPages() <= page) {
-				int exceeded = page + 1 ;
-				throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NO_PAGE_HERE,
-						"[NO PAGE HERE] There are " + pageOfProducts.getTotalPages() + 
-						" pages available but you went to " + exceeded + "!");
-			}
+		Page<Products> pageOfProducts = productsRepository.findByIsOnStore(0, paging);
+		productList = pageOfProducts.getContent();
 
-			Map<String, Object> response = new HashMap<>();
-			response.put("products", productList);
-			response.put("currentPage", pageOfProducts.getNumber());
-			response.put("totalItems", pageOfProducts.getTotalElements());
-			response.put("totalPages", pageOfProducts.getTotalPages());
+		if (pageOfProducts.getTotalPages() <= page) {
+			int exceeded = page + 1;
+			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NO_PAGE_HERE, "[NO PAGE HERE] There are "
+					+ pageOfProducts.getTotalPages() + " pages available but you went to " + exceeded + "!");
+		}
 
-			return new ResponseEntity<>(response, HttpStatus.OK);
+		Map<String, Object> response = new HashMap<>();
+		response.put("products", productList);
+		response.put("currentPage", pageOfProducts.getNumber());
+		response.put("totalItems", pageOfProducts.getTotalElements());
+		response.put("totalPages", pageOfProducts.getTotalPages());
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	// Search by ID.
@@ -72,6 +71,35 @@ public class ProductsRESTcontroller {
 						"[ OBJECT DOES NOT EXIST ] the product id " + id + " is not exist in our database."));
 		return ResponseEntity.ok().body(search);
 	}
+
+	@GetMapping("/searchByName")
+	public ResponseEntity<Map<String, Object>> findByName(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "") String searchCaseName) {
+		List<Products> productList = new ArrayList<Products>();
+		Pageable paging = PageRequest.of(page, size);
+
+		Page<Products> pageOfProducts = productsRepository.findBycaseNameContaining(searchCaseName, paging);
+		productList = pageOfProducts.getContent();
+
+		if (pageOfProducts.getTotalPages() <= page) {
+			int exceeded = page + 1;
+			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NO_PAGE_HERE, "[NO PAGE HERE] There are "
+					+ pageOfProducts.getTotalPages() + " pages available but you went to " + exceeded + "!");
+		}
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("products", productList);
+		response.put("currentPage", pageOfProducts.getNumber());
+		response.put("totalItems", pageOfProducts.getTotalElements());
+		response.put("totalPages", pageOfProducts.getTotalPages());
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	/*
+	 * @GetMapping("/test") public Page<Products> testThis(Pageable pageable) {
+	 * return productsRepository.findByIsOnStore(1, pageable); }
+	 */
 
 	// List by page
 	/*

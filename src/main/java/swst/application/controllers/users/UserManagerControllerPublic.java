@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import swst.application.models.users.UsernamesModels;
 import swst.application.repositories.UsernameRepository;
 
-@CrossOrigin("*")
 @RequestMapping("/public/users")
 @RestController
 public class UserManagerControllerPublic {

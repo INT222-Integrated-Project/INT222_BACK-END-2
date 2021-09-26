@@ -12,7 +12,6 @@ import swst.application.models.products.Colors;
 import swst.application.repositories.ColorsRepository;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/public/colors")
 public class ColorsRESTContoller {
 

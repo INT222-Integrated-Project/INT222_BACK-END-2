@@ -23,23 +23,42 @@ import swst.application.exceptionhandlers.ExceptionFoundation;
 @PropertySource("userdefined.properties")
 public class ImageService implements FileStorageServices {
 	@Value("${application.folder.product-images}")
-	private String destination = "";
+	private String destination;
 
-	public Path directory = Paths.get("product-images");
+	@Value("${application.folder.product-images}")
+	private String productImageDestination;
+
+	@Value("${application.folder.profile-images}")
+	private String profileImageDestination;
+
+	@Value("${application.folder.preview-image}")
+	private String previewImageDestination;
+
+	public Path directory = Paths.get(destination);
+	public Path productImage = Paths.get(destination + "/" + productImageDestination);
+	public Path profileImage = Paths.get(destination + "/" + profileImageDestination);
+	public Path previewImage = Paths.get(destination + "/" + previewImageDestination);
 
 	@Override
 	@PostConstruct
 	public void init() {
 		try {
-			System.out.println("[ ENTERED ] Entering file init..");
 			if (Files.isDirectory(directory) == false) {
 				Files.createDirectory(directory);
-				System.out.println("[ OK! ] Directory \"" + destination + "\" Created.");
-			} else {
-				System.out.println("[ NOPE ] Directory \"" + destination + "\" already exist.");
 			}
+			if (Files.isDirectory(productImage) == false) {
+				Files.createDirectory(productImage);
+			}
+			if (Files.isDirectory(profileImage) == false) {
+				Files.createDirectory(profileImage);
+			}
+			if (Files.isDirectory(previewImage) == false) {
+				Files.createDirectory(previewImage);
+			}
+
 		} catch (IOException exc) {
-			throw new RuntimeException("[ FAILED ] Init doesn't failed, can't create a folder.");
+			throw new ExceptionFoundation(EXCEPTION_CODES.CORE_INIT_FAILED,
+					"[ FAILED ] Init doesn't failed, it can't create a folder.");
 		}
 	}
 
@@ -92,7 +111,8 @@ public class ImageService implements FileStorageServices {
 			if (reso.exists() || reso.isReadable()) {
 				return reso;
 			} else {
-				throw new ExceptionFoundation(ExceptionDetails.EXCEPTION_CODES.SEARCH_CAN_NOT_READ,"[ FAILED ]  Can not recieve file. Error: Can't read");
+				throw new ExceptionFoundation(ExceptionDetails.EXCEPTION_CODES.SEARCH_CAN_NOT_READ,
+						"[ FAILED ]  Can not recieve file. Error: Can't read");
 			}
 		} catch (MalformedURLException exc) {
 			throw new RuntimeException(

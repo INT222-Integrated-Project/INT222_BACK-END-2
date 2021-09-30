@@ -10,7 +10,7 @@ public class ExceptionDetails {
 		// Searching
 		SEARCH_NOT_FOUND(1001), // Resource not found.
 		SEARCH_CAN_NOT_READ(1002), // Cab't read, for some reason...
-		SEARCH_NO_PAGE_HERE(1003), //When there are 5 pages available but user goes for 6.
+		SEARCH_NO_PAGE_HERE(1003), // When there are 5 pages available but user goes for 6.
 
 		// Saving
 		SAVE_IMAGE_FAILED(2001), // Can't save image.
@@ -22,11 +22,16 @@ public class ExceptionDetails {
 		AUTHEN_USERNAME_ALREADY_EXISTED(3002), // When registering the username but someone already took it.
 		AUTHEN_REGISTERATION_FAILED(3003), // Maybe the user forgot to create their password.
 
-		// Unvailable, at least for now.
-		FEATURE_NOT_IMPLEMENTED(4001), //Not yet done.
-		FEATURE_KNOWN_BUG(4002), // We just know that it is going to be an error. At least the application doesn't quit.
+		// Unavailable, at least for now.
+		FEATURE_NOT_IMPLEMENTED(4001), // Not yet done.
+		FEATURE_KNOWN_BUG(4002), // We just know that it is going to be an error. At least the application
+									// doesn't quit.
 		FEATURE_TOO_DANGEROUS_TO_HAVE_IT(4003), // We won't let you use it...
-		
+
+		// Application core infrastructure
+		CORE_INIT_FAILED(5001), // File initialization failed.
+		CORE_FILE_DUPLICATED(5002), // File duplicated.
+
 		// Others
 		DEAD(9999); // Just stupidly died with an unknown reason.
 

@@ -18,11 +18,11 @@ public class ApplicationConfig implements WebMvcConfigurer {
 	@Value("#{'${application.origin.method}'.split(',')}")
 	private String[] allowedMethods;
 	@Value("#{'${application.origin.host}'.split(',')}")
-	private String[] alloweDomain;
+	private String[] allowedDomain;
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**").allowedOrigins(alloweDomain).allowedMethods(allowedMethods);
+		registry.addMapping("/**").allowedOrigins(allowedDomain).allowedMethods(allowedMethods);
 	}
 
 }

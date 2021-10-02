@@ -45,15 +45,19 @@ public class ImageService implements FileStorageServices {
 		try {
 			if (Files.isDirectory(directory) == false) {
 				Files.createDirectory(directory);
+				System.out.println("Directory " + destination + " Created!");
 			}
 			if (Files.isDirectory(productImage) == false) {
 				Files.createDirectory(productImage);
+				System.out.println("Directory " + productImageDestination + " Created!");
 			}
 			if (Files.isDirectory(profileImage) == false) {
 				Files.createDirectory(profileImage);
+				System.out.println("Directory " + profileImageDestination + " Created!");
 			}
 			if (Files.isDirectory(previewImage) == false) {
 				Files.createDirectory(previewImage);
+				System.out.println("Directory " + previewImageDestination + " Created!");
 			}
 
 		} catch (IOException exc) {

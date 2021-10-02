@@ -21,7 +21,7 @@ public class WebSecirityConficuration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**").antMatchers("/public/**");
+		web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**").antMatchers("/public/**,/api/public/**");
 	}
 
 	@Override

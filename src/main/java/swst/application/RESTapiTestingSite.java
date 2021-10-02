@@ -27,7 +27,7 @@ import swst.application.repositories.UsernameRepository;
 import swst.application.repositories.ProductsColorRepository;
 import swst.application.repositories.ProductsRepository;
 import swst.application.repositories.RolesRepository;
-import swst.application.repositories.StatusRepository;
+import swst.application.repositories.OrderStatusRepository;
 
 @RestController
 @RequestMapping("/test")
@@ -59,7 +59,7 @@ public class RESTapiTestingSite {
 	@Autowired
 	private OrderDetailRepository orderDetailRepository;
 	@Autowired
-	private StatusRepository statusRepository;
+	private OrderStatusRepository statusRepository;
 
 	/*
 	 * FindAll

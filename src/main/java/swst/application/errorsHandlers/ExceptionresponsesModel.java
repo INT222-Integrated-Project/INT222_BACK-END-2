@@ -24,6 +24,7 @@ public class ExceptionresponsesModel {
 		AUTHEN_REGISTERATION_FAILED(3003), // Maybe the user forgot to create their password.
 		AUTHEN_PHONE_NUMBER_ALREADY_EXISTED(3004), // Someone owned this phone number.
 		AUTHEN_TOKEN_MALFUNCTION(3005), // Token is broken.
+		AUTHEN_ILLEGAL_CHAR(3006), // This character of the string is not allowed.
 
 		// Unavailable, at least for now.
 		FEATURE_NOT_IMPLEMENTED(4001), // Not yet done.

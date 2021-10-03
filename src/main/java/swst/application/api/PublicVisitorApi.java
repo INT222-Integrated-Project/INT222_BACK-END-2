@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import swst.application.entities.Colors;
 import swst.application.entities.Models;
 import swst.application.entities.Products;
 import swst.application.entities.UsernamesModels;
+import swst.application.errorsHandlers.HttpResponsesModel;
 import swst.application.models.CreateNewUserModel;
 import swst.application.models.LoginModel;
 import swst.application.models.LoginResponseModel;
@@ -47,9 +49,9 @@ public class PublicVisitorApi {
 
 	// [ createNewUser ] Will create new user.
 	@PostMapping("/auth/register")
-	public ResponseEntity<UsernamesModels> createNewUser(@RequestBody CreateNewUserModel newUser) {
-		UsernamesModels createdUser = publicUserController.register(newUser);
-		return ResponseEntity.ok(createdUser);
+	public ResponseEntity<HttpStatus> createNewUser(@RequestBody CreateNewUserModel newUser) {
+		publicUserController.register(newUser);
+		return ResponseEntity.ok(HttpStatus.OK);
 	}
 	
 	// [ userLogin ] Give the user login and token.

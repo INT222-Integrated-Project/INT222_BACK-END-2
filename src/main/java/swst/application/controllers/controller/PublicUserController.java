@@ -2,6 +2,7 @@ package swst.application.controllers.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,11 @@ public class PublicUserController {
 	private RolesRepository rolesRepository;
 
 	public UsernamesModels register(CreateNewUserModel newuser) {
+
+		if (!Pattern.matches("[a-zA-Z0-9_]+", newuser.getUserName())) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_ILLEGAL_CHAR,
+					"[ ILLEGAL USER NAME ] Username can only contain A-Z or digits.");
+		}
 		if (usernameRepository.existsByUserNameIgnoreCase(newuser.getUserName())) {
 			throw new ExceptionFoundation(ExceptionresponsesModel.EXCEPTION_CODES.AUTHEN_USERNAME_ALREADY_EXISTED,
 					"[ EXISTED ] This username is used.");

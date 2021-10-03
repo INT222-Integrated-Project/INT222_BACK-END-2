@@ -8,11 +8,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class SecurityUtils {
 
-	private SecurityUtils() {
+	// This class will get the login of the current user and return login to that
+	// user.
 
-	}
-
-	public static Optional<String> getCurrentUsername() {
+	public static Optional<String> getCurrentUserName() {
 		final Authentication authen = SecurityContextHolder.getContext().getAuthentication();
 
 		if (authen == null) {
@@ -21,8 +20,8 @@ public class SecurityUtils {
 
 		String username = null;
 		if (authen.getPrincipal() instanceof UserDetails) {
-			UserDetails securityUser = (UserDetails) authen.getPrincipal();
-			username = securityUser.getUsername();
+			UserDetails secureUser = (UserDetails) authen.getPrincipal();
+			username = secureUser.getUsername();
 		} else if (authen.getPrincipal() instanceof String) {
 			username = (String) authen.getPrincipal();
 		}

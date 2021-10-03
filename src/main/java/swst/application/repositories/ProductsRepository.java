@@ -8,7 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import swst.application.models.products.Products;
+import swst.application.entities.Products;
 
 public interface ProductsRepository extends JpaRepository<Products, Integer> {
 	// List<Products> findAllByPage

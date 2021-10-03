@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import swst.application.models.users.UsernamesModels;
+import swst.application.entities.UsernamesModels;
 import swst.application.repositories.RolesRepository;
 import swst.application.repositories.UsernameRepository;
 
@@ -38,7 +38,7 @@ public class UserNameService {
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 	}*/
 	
-	public UsernamesModels findUserByName(String username) {
+	/*public UsernamesModels findUserByName(String username) {
 		return usernameRepository.findByUserName(username);
 	}
 	
@@ -46,5 +46,5 @@ public class UserNameService {
 		user.setUserPassword(bCryptPasswordEncoder.encode(user.getUserPassword()));
 		user.setRoleID(1);
 		return usernameRepository.save(user);
-	}
+	}*/
 }

@@ -20,6 +20,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import swst.application.authenSecurity.TokenUtills;
 import swst.application.controllers.controller.ProductsController;
+import swst.application.controllers.controller.UserController;
 import swst.application.entities.UsernamesModels;
 import swst.application.repositories.UsernameRepository;
 
@@ -32,20 +33,13 @@ public class UsersApi {
 	private final ProductsController productsRESTcontroller;
 	@Autowired
 	private final UsernameRepository usernameRepository;
+	@Autowired
+	private final UserController userController;
 
 	// [ getMyprofile ] Will return a profile of that user.
 	@GetMapping("/myprofile")
 	public ResponseEntity<UsernamesModels> getMyprofile(HttpServletRequest request) {
-		String authenHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-		UsernamesModels getThisUser = new UsernamesModels();
-		if (authenHeader != null && authenHeader.startsWith("Bearer ")) {
-			String token = authenHeader.substring("Bearer ".length());
-			JWTVerifier verifier = JWT.require(TokenUtills.getAlgorithm()).build();
-			DecodedJWT decodedJWT = verifier.verify(token);
-			String userName = decodedJWT.getSubject();
-			getThisUser = usernameRepository.findByUserName(userName);
-		}
-		return ResponseEntity.ok().body(getThisUser);
+		return ResponseEntity.ok().body(usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)));
 	}
 
 }

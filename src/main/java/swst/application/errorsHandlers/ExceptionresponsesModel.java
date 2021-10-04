@@ -26,6 +26,7 @@ public class ExceptionresponsesModel {
 		AUTHEN_TOKEN_MALFUNCTION(3005), // Token is broken.
 		AUTHEN_ILLEGAL_CHAR(3006), // This character of the string is not allowed.
 		AUTHEN_NOT_ALLOWED(3007), // When the account is suspended.
+		AUTHEN_HORRIBLE_TOKEN(3008), // This token is invalid, nothing can be found here.
 
 		// Unavailable, at least for now.
 		FEATURE_NOT_IMPLEMENTED(4001), // Not yet done.

@@ -30,26 +30,26 @@ public class UsernamesModels {
 	private String userName;
 	@JsonIgnore
 	private String userPassword;
-	
+
 	private String firstName;
 	private String lastName;
-	
+
 	@Basic(optional = true)
 	@Column(nullable = true)
 	private String email;
-	
+
 	private String phoneNumber;
-	
+
 	@Basic(optional = true)
 	@Column(name = "cusImage", nullable = true)
 	private String profileImage;
-	
+
 	@Basic(optional = true)
 	@Column(nullable = true)
 	private String address;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "roleID", nullable = false)
 	private Roles role;
-	
+
 }

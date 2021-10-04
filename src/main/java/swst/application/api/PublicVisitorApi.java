@@ -1,5 +1,6 @@
 package swst.application.api;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import lombok.RequiredArgsConstructor;
+import swst.application.authenSecurity.UserNameService;
 import swst.application.controllers.controller.ModelController;
 import swst.application.controllers.controller.ProductsController;
 import swst.application.controllers.controller.PublicUserController;
@@ -23,51 +26,52 @@ import swst.application.entities.Colors;
 import swst.application.entities.Models;
 import swst.application.entities.Products;
 import swst.application.entities.UsernamesModels;
-import swst.application.errorsHandlers.HttpResponsesModel;
 import swst.application.models.CreateNewUserModel;
 import swst.application.models.LoginModel;
 import swst.application.models.LoginResponseModel;
-import swst.application.models.TestJSONModel;
 import swst.application.repositories.BrandsRepository;
 import swst.application.repositories.ColorsRepository;
+import swst.application.repositories.UsernameRepository;
 
 @RestController
 @RequestMapping("/public")
+@RequiredArgsConstructor
 public class PublicVisitorApi {
 	@Autowired
-	private PublicUserController publicUserController;
+	private final PublicUserController publicUserController;
 	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 	@Autowired
-	private ProductsController productsRESTcontroller;
+	private final ProductsController productsRESTcontroller;
 	@Autowired
-	private ColorsRepository colorsRepository;
+	private final ColorsRepository colorsRepository;
 	@Autowired
-	private ModelController modelController;
+	private final ModelController modelController;
 	@Autowired
-	private BrandsRepository brandRepository;
+	private final BrandsRepository brandRepository;
+	@Autowired
+	private final UserNameService userNameService;
+	@Autowired
+	private final UsernameRepository usernameRepository;
+
+	@GetMapping("/user")
+	public ResponseEntity<List<UsernamesModels>> getAllUser() {
+		return ResponseEntity.ok().body(userNameService.getAllUsers());
+	}
 
 	// [ createNewUser ] Will create new user.
 	@PostMapping("/auth/register")
 	public ResponseEntity<HttpStatus> createNewUser(@RequestBody CreateNewUserModel newUser) {
 		publicUserController.register(newUser);
-		return ResponseEntity.ok(HttpStatus.OK);
+		URI uri = URI
+				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/public/auth/register").toString());
+		return ResponseEntity.created(uri).body(null);
 	}
-	
+
 	// [ userLogin ] Give the user login and token.
 	@PostMapping("/auth/login")
-	public LoginResponseModel userLogin(@RequestBody LoginModel userLogin) {
-		return null;
-	}
-
-	@PostMapping("auth/psd")
-	public String generatePass(@RequestBody CreateNewUserModel newUser) {
-		return passwordEncoder.encode(newUser.getUserPassword());
-	}
-
-	@PostMapping("/auth/test")
-	public ResponseEntity<CreateNewUserModel> testPost(@RequestBody CreateNewUserModel model) {
-		return ResponseEntity.ok(model);
+	public ResponseEntity<LoginResponseModel> userLogin(@RequestBody LoginModel userLogin) {
+		return ResponseEntity.ok().body(publicUserController.authenUser(userLogin));
 	}
 
 	// [ listProductWithPage ] Will list product with page, optional with name.

@@ -1,12 +1,8 @@
 package swst.application.entities;
 
 import java.util.List;
-import java.util.Set;
-
 import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.*;
 
 @AllArgsConstructor
@@ -32,13 +28,13 @@ public class Products {
 	@ManyToMany
 	@JoinTable(name = "productscolor", joinColumns = @JoinColumn(name = "caseID", referencedColumnName = "caseID"), inverseJoinColumns = @JoinColumn(name = "codeColor", referencedColumnName = "codeColor"))
 	private List<Colors> colors;
-	
+
 	@ManyToMany
 	@JoinTable(name = "productmodel", joinColumns = @JoinColumn(name = "caseID", referencedColumnName = "caseID"), inverseJoinColumns = @JoinColumn(name = "modelID", referencedColumnName = "modelID"))
 	private List<Models> models;
-	
+
 	private String productImage;
-	
+
 	private int isOnStore;
 
 }

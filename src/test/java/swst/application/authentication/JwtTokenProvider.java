@@ -1,4 +1,4 @@
-package swst.application.authentication;
+/*package swst.application.authentication;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -22,7 +22,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Component
-public class TokenProvider implements InitializingBean {
+public class JwtTokenProvider implements InitializingBean {
 
 	private static final String AUTHORITIES_KEY = "authen";
 
@@ -32,7 +32,7 @@ public class TokenProvider implements InitializingBean {
 
 	private Key key;
 
-	public TokenProvider(@Value("${jwt.base64-secret}") String base64Secret,
+	public JwtTokenProvider(@Value("${jwt.base64-secret}") String base64Secret,
 			@Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds,
 			@Value("${jwt.token-validity-in-seconds-for-remember-me}") long tokenValidityInSecondsForRememberMe) {
 		this.base64Secret = base64Secret;
@@ -92,4 +92,4 @@ public class TokenProvider implements InitializingBean {
 		return false;
 	}
 
-}
+}*/

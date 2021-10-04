@@ -1,11 +1,6 @@
 package swst.application.entities;
 
-import java.util.List;
-
 import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.*;
 
 @AllArgsConstructor
@@ -14,13 +9,11 @@ import lombok.*;
 @Entity
 @Table(name = "brands")
 public class Brands {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int codeBrand;
-	
-	private String caseBrand;
-	
 
-	
+	private String caseBrand;
+
 }

@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @PropertySource("userdefined.properties")
 @Configuration
-public class ApplicationConfig implements WebMvcConfigurer {
+public class ApplicationCorsConfig implements WebMvcConfigurer {
 
 	@Value("#{'${application.origin.method}'.split(',')}")
 	private String[] allowedMethods;

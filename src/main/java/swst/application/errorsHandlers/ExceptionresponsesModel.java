@@ -25,6 +25,7 @@ public class ExceptionresponsesModel {
 		AUTHEN_PHONE_NUMBER_ALREADY_EXISTED(3004), // Someone owned this phone number.
 		AUTHEN_TOKEN_MALFUNCTION(3005), // Token is broken.
 		AUTHEN_ILLEGAL_CHAR(3006), // This character of the string is not allowed.
+		AUTHEN_NOT_ALLOWED(3007), // When the account is suspended.
 
 		// Unavailable, at least for now.
 		FEATURE_NOT_IMPLEMENTED(4001), // Not yet done.

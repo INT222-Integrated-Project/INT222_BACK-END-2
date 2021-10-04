@@ -1,17 +1,16 @@
 package swst.application.models;
 
 import lombok.Data;
-import swst.application.entities.UsernamesModels;
 
 @Data
 public class LoginResponseModel {
-	private UsernamesModels usernamesModels;
-	private boolean authenSuccess;
-	private String token;
+	private String usernames;
+	private String acceessToken;
+	private String refreshToken;
 
-	public LoginResponseModel(UsernamesModels usernamesModels, boolean authenSuccess, String token) {
-		this.usernamesModels = usernamesModels;
-		this.authenSuccess = authenSuccess;
-		this.token = token;
+	public LoginResponseModel(String usernames, String acceessToken, String refreshToken) {
+		this.usernames = usernames;
+		this.acceessToken = acceessToken;
+		this.refreshToken = refreshToken;
 	}
 }

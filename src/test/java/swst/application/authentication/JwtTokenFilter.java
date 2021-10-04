@@ -1,57 +1,50 @@
-package swst.application.authentication;
+/*package swst.application.authentication;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import lombok.RequiredArgsConstructor;
-import swst.application.repositories.UsernameRepository;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpHeaders;
-
-import static org.springframework.util.StringUtils.isEmpty;
 
 import java.io.IOException;
 
-@Component
-@RequiredArgsConstructor
-public class JwtTokenFilter /*extends OncePerRequestFilter*/ {
+public class JwtTokenFilter extends OncePerRequestFilter {
 
-	private final JwtTokenUtil jwtTokenUtil;
-	private final UsernameRepository usernameRepository;
+	private JwtTokenProvider jwtTokenProvider;
+	public static final String AUTHORIZATION_HEADER = "Authorization";
 
-	/*@Override
+	public JwtTokenFilter(JwtTokenProvider jwtTokenProvider) {
+		this.jwtTokenProvider = jwtTokenProvider;
+	}
+
+	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		// Get authorization header and validate HERE!
-		final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-		if (!header.startsWith("Bearer ")) {
-			filterChain.doFilter(request, response);
-			return;
+
+		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+		String jwt = resolveToken(httpServletRequest);
+
+		if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+			Authentication authen = jwtTokenProvider.getAuthenticationT(jwt);
+			SecurityContextHolder.getContext().setAuthentication(authen);
 		}
 
-		// Get token and validate.
-		final String token = header.split(" ")[1].trim();
-		if (!jwtTokenUtil.validateToken(token)) {
-			filterChain.doFilter(request, response);
-			return;
+		filterChain.doFilter(request, response);
+	}
+
+	private String resolveToken(HttpServletRequest request) {
+		String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+			return bearerToken.substring(7);
 		}
+		return null;
+	}
 
-		// Get user identity and place it on the spring security.
-		//UserDetails userDetails = usernameRepository.findByUserName(jwtTokenUtil.getUser)).orElse(null);
-	}*/
-
-}
+}*/
 
 /*
  * public static final String AUTHORIZATION_HEADER = "Authorization"; private

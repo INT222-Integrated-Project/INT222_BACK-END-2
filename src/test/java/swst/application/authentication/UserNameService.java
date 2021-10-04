@@ -1,4 +1,4 @@
-package swst.application.authentication;
+/*package swst.application.authentication;
 
 import java.util.Optional;
 
@@ -46,5 +46,6 @@ public class UserNameService {
 		user.setUserPassword(bCryptPasswordEncoder.encode(user.getUserPassword()));
 		user.setRoleID(1);
 		return usernameRepository.save(user);
-	}*/
+	}
 }
+*/

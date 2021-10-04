@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import lombok.Data;
 
+@SuppressWarnings("serial")
 @Embeddable
 @Data
 public class OrderDetailRelationKey implements Serializable {

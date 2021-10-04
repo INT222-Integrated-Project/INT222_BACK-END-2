@@ -1,4 +1,4 @@
-package swst.application.authentication;
+/*package swst.application.authentication;
 
 import java.io.IOException;
 
@@ -20,4 +20,4 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
 	}
 
-}
+}*/

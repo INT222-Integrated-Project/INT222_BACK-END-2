@@ -45,6 +45,7 @@ public class WebSecirityConficuration extends WebSecurityConfigurerAdapter {
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		http.authorizeRequests().antMatchers("/public/**").permitAll();
+		http.authorizeRequests().antMatchers("/test/**").permitAll();
 		http.authorizeRequests().antMatchers(HttpMethod.GET,"/admin/ListUsers").hasAnyAuthority("customer");
 		http.authorizeRequests().anyRequest().authenticated();
 

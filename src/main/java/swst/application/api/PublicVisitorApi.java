@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -61,7 +62,7 @@ public class PublicVisitorApi {
 
 	// [ createNewUser ] Will create new user.
 	@PostMapping("/auth/register")
-	public ResponseEntity<HttpStatus> createNewUser(@RequestBody CreateNewUserModel newUser) {
+	public ResponseEntity<HttpStatus> createNewUser(@RequestPart CreateNewUserModel newUser) {
 		publicUserController.register(newUser);
 		URI uri = URI
 				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/public/auth/register").toString());

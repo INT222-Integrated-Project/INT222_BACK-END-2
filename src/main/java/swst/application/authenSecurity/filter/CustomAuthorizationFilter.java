@@ -1,12 +1,16 @@
 /*package swst.application.authenSecurity.filter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Stream;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.auth0.jwt.JWT;
@@ -31,7 +35,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
 					DecodedJWT decodedJWT = verifier.verify(token);
 					String userName = decodedJWT.getSubject();
-					String role = decodedJWT.getClaim("role")
+					String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+					Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
 				} catch (Exception exc) {
 					// TODO: handle exception
 				}

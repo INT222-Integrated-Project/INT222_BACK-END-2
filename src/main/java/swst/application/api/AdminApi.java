@@ -24,4 +24,5 @@ public class AdminApi {
 	public ResponseEntity<List<UsernamesModels>> listAllUsers() {
 		return ResponseEntity.ok().body(usernameRepository.findAll());
 	}
+
 }

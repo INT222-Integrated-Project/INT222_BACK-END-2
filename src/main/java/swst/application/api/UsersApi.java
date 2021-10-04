@@ -25,20 +25,13 @@ import swst.application.repositories.UsernameRepository;
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UsersApi {
-	
+
 	@Autowired
 	private final ProductsController productsRESTcontroller;
 
-	@GetMapping("/products")
-	public Page<Products> listProductWithPage(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "9") int size, @RequestParam(defaultValue = "") String searchname) {
-		return productsRESTcontroller.listProductOnStore(page, size, searchname);
-	}
-	
 	@GetMapping("/myprofile")
-	public ResponseEntity<UsernamesModels> getMyprofile ( ){
+	public ResponseEntity<UsernamesModels> getMyprofile() {
 		return null;
 	}
-	
-}
 
+}

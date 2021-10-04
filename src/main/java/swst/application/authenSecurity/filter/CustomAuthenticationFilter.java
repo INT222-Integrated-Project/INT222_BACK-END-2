@@ -1,8 +1,6 @@
 package swst.application.authenSecurity.filter;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.stream.Collectors;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -17,8 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+import swst.application.authenSecurity.TokenUtills;
 
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -41,16 +38,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authen) throws IOException, ServletException {
 		User userLogin = (User) authen.getPrincipal();
-		Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-		String accessToken = JWT.create().withSubject(userLogin.getUsername())
-				.withExpiresAt(new Date(System.currentTimeMillis() + 43200000))
-				.withIssuer("naturegecko").withClaim("roles", userLogin.getAuthorities().stream()
-						.map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-				.sign(algorithm);
-
-		String refreshToken = JWT.create().withSubject(userLogin.getUsername())
-				.withExpiresAt(new Date(System.currentTimeMillis() + 60000))
-				.withIssuer(request.getRequestURL().toString()).sign(algorithm);
+		String accessToken = TokenUtills.createToken(userLogin);
+		String refreshToken = TokenUtills.createRefreshToken(userLogin);
 
 		response.setHeader("accessToken", accessToken);
 		response.setHeader("refreshToken", refreshToken);

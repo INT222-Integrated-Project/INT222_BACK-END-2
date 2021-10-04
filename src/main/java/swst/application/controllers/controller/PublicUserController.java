@@ -15,6 +15,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import lombok.extern.slf4j.Slf4j;
+import swst.application.authenSecurity.TokenUtills;
 import swst.application.entities.Roles;
 import swst.application.entities.UsernamesModels;
 import swst.application.errorsHandlers.ExceptionresponsesModel;
@@ -75,7 +76,6 @@ public class PublicUserController {
 			throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_NOT_ALLOWED, "[ SUS ] This accound is suspended.");
 		}
 
-		Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
 		String[] roles = { "" };
 		Roles getUserRoles = requestUser.getRole();
 		/*
@@ -83,10 +83,7 @@ public class PublicUserController {
 		 */
 		roles[0] = getUserRoles.getRoleName();
 
-		String token = JWT.create().withSubject(loginUser.getUserName())
-				.withExpiresAt(new Date(System.currentTimeMillis() * 600000)).withIssuer("naturegecko")
-				.withArrayClaim("roles", roles).sign(algorithm);
-		
+		String token = TokenUtills.createToken(requestUser.getUserName(),roles);
 		response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
 		LoginResponseModel loginResponse = new LoginResponseModel(loginUser.getUserName(), token);
 		return loginResponse;

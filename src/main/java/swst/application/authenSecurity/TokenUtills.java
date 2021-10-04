@@ -14,7 +14,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 
 @Service
 @PropertySource("userdefined.properties")
-public class SecurityUtills {
+public class TokenUtills {
 
 	@Autowired
 	private static String secret = "S2lyYWggSGFpdGFrYQ==";
@@ -23,9 +23,17 @@ public class SecurityUtills {
 
 	public static String createToken(User userLogin) {
 		String accessToken = JWT.create().withSubject(userLogin.getUsername())
-				.withExpiresAt(new Date(System.currentTimeMillis() * expireInMili)).withIssuer(issuedBy)
+				.withExpiresAt(new Date(System.currentTimeMillis() + expireInMili)).withIssuer(issuedBy)
 				.withClaim("roles", userLogin.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 						.collect(Collectors.toList()))
+				.sign(getAlgorithm());
+		return accessToken;
+	}
+	
+	public static String createToken(String username,String[] roles) {
+		String accessToken = JWT.create().withSubject(username)
+				.withExpiresAt(new Date(System.currentTimeMillis() + expireInMili)).withIssuer(issuedBy)
+				.withArrayClaim("roles", roles)
 				.sign(getAlgorithm());
 		return accessToken;
 	}

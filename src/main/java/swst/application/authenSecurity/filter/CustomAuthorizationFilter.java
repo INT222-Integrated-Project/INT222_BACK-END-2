@@ -21,11 +21,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import lombok.extern.slf4j.Slf4j;
-import swst.application.authenSecurity.SecurityUtills;
+import swst.application.authenSecurity.TokenUtills;
 
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
@@ -40,8 +39,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 			if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 				try {
 					String token = authorizationHeader.substring("bearer ".length());
-					Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-					JWTVerifier verifier = JWT.require(algorithm).build();
+					JWTVerifier verifier = JWT.require(TokenUtills.getAlgorithm()).build();
 					DecodedJWT decodedJWT = verifier.verify(token);
 					String userName = decodedJWT.getSubject();
 					String[] roles = decodedJWT.getClaim("roles").asArray(String.class);

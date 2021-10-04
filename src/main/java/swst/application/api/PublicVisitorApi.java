@@ -95,7 +95,7 @@ public class PublicVisitorApi {
 		return colorsRepository.findAll();
 	}
 
-	// [ listAllBrands ]List all brands available in the repository.
+	// [ listAllBrands ] List all brands available in the repository.
 	@GetMapping("/brands")
 	public List<Brands> listAllBrands() {
 		return brandRepository.findAll();

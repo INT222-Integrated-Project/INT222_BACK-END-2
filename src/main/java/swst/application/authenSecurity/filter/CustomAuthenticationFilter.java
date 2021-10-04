@@ -28,10 +28,13 @@ import lombok.RequiredArgsConstructor;
 import swst.application.models.LoginModel;
 import swst.application.models.LoginResponseModel;
 
-@RequiredArgsConstructor
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 	private final AuthenticationManager authenticationManager;
+
+	public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
+		this.authenticationManager = authenticationManager;
+	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -48,7 +51,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 		User userLogin = (User) authen.getPrincipal();
 		Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
 		String accessToken = JWT.create().withSubject(userLogin.getUsername())
-				.withExpiresAt(new Date(System.currentTimeMillis() + 60000))
+				.withExpiresAt(new Date(System.currentTimeMillis() + 43200000))
 				.withIssuer(request.getRequestURL().toString()).withClaim("roles", userLogin.getAuthorities().stream()
 						.map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
 				.sign(algorithm);

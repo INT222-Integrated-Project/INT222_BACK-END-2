@@ -24,7 +24,7 @@ import swst.application.repositories.UsernameRepository;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class UserNameService implements UserNameModelService, UserDetailsService {
+public class UserNameService implements UserDetailsService {
 
 	private final UsernameRepository userNameRepository;
 	private final RolesRepository rolesRepository;
@@ -42,20 +42,17 @@ public class UserNameService implements UserNameModelService, UserDetailsService
 		return new User(user.getUserName(), user.getUserPassword(), authorities);
 	}
 
-	@Override
 	public UsernamesModels saveNewUser(UsernamesModels newUser) {
 		newUser.setUserPassword(passwordEncoder.encode(newUser.getUserPassword()));
 		return userNameRepository.save(newUser);
 	}
 
-	@Override
 	public void assignRole(String username, String roleName) {
 		UsernamesModels user = userNameRepository.findByUserName(username);
 		Roles role = rolesRepository.findByroleName(roleName);
 		user.setRole(role);
 	}
 
-	@Override
 	public UsernamesModels getUserByName(String username) {
 		return userNameRepository.findByUserName(username);
 	}

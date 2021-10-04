@@ -12,9 +12,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 import swst.application.authenSecurity.filter.CustomAuthenticationFilter;
+import swst.application.authenSecurity.filter.CustomAuthorizationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -38,7 +40,7 @@ public class WebSecirityConficuration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		
+
 		CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager());
 		customAuthenticationFilter.setFilterProcessesUrl("/public/authen");
 		http.cors();
@@ -46,10 +48,12 @@ public class WebSecirityConficuration extends WebSecurityConfigurerAdapter {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		http.authorizeRequests().antMatchers("/public/**").permitAll();
 		http.authorizeRequests().antMatchers("/test/**").permitAll();
-		http.authorizeRequests().antMatchers(HttpMethod.GET,"/admin/ListUsers").hasAnyAuthority("customer");
+		http.authorizeRequests().antMatchers("/user/**").hasAnyAuthority("customer", "admin");
+		http.authorizeRequests().antMatchers("/admin/**").hasAnyAuthority("admin");
 		http.authorizeRequests().anyRequest().authenticated();
 
 		http.addFilter(customAuthenticationFilter);
+		http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 
 	@Bean
@@ -57,24 +61,4 @@ public class WebSecirityConficuration extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
-
-	/*
-	 * .and().csrf().disable().addFilterBefore(corsFilter,
-	 * UsernamePasswordAuthenticationFilter.class)
-	 * .exceptionHandling().authenticationEntryPoint(authenticationErrorHandler)
-	 * .accessDeniedHandler(jwtAccessDeniedHandler).and().headers().frameOptions().
-	 * sameOrigin()
-	 * 
-	 * .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.
-	 * STATELESS)
-	 * 
-	 * .and().authorizeRequests().antMatchers("/public/**").permitAll()
-	 * 
-	 * .anyRequest().authenticated().and().apply(securityConfigurerAdapter());
-	 */
-	/*
-	 * private JWTConfigurer securityConfigurerAdapter() { return new
-	 * JWTConfigurer(tokenPovider); }
-	 */
-
 }

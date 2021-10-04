@@ -1,3 +1,4 @@
+package swst.application.ruined;
 /*package swst.application.authentication;
 
 import io.jsonwebtoken.*;

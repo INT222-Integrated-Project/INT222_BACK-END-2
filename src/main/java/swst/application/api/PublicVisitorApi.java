@@ -3,10 +3,15 @@ package swst.application.api;
 import java.net.URI;
 import java.util.List;
 
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,7 +76,7 @@ public class PublicVisitorApi {
 
 	// [ userLogin ] Give the user login and token.
 	@PostMapping("/auth/login")
-	public ResponseEntity<LoginResponseModel> userLogin(@RequestBody LoginModel userLogin) {
+	public ResponseEntity<?> userLogin(@RequestBody LoginModel userLogin) {
 		return ResponseEntity.ok().body(publicUserController.authenUser(userLogin));
 	}
 

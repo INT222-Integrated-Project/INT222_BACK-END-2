@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import lombok.RequiredArgsConstructor;
+import swst.application.authenSecurity.SecurityUtills;
+import swst.application.authenSecurity.UserNameService;
+import swst.application.entities.UsernamesModels;
 import swst.application.models.LoginModel;
 import swst.application.models.LoginResponseModel;
 
@@ -52,7 +56,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 		Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
 		String accessToken = JWT.create().withSubject(userLogin.getUsername())
 				.withExpiresAt(new Date(System.currentTimeMillis() + 43200000))
-				.withIssuer(request.getRequestURL().toString()).withClaim("roles", userLogin.getAuthorities().stream()
+				.withIssuer("naturegecko").withClaim("roles", userLogin.getAuthorities().stream()
 						.map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
 				.sign(algorithm);
 

@@ -20,7 +20,7 @@ public class AdminApi {
 	@Autowired
 	private final UsernameRepository usernameRepository;
 
-	@GetMapping("/ListUsers")
+	@GetMapping("/us")
 	public ResponseEntity<List<UsernamesModels>> listAllUsers() {
 		return ResponseEntity.ok().body(usernameRepository.findAll());
 	}

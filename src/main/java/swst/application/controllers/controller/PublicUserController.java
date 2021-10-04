@@ -1,19 +1,35 @@
 package swst.application.controllers.controller;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+
+import swst.application.authenSecurity.filter.CustomAuthenticationFilter;
+import swst.application.entities.Roles;
 import swst.application.entities.UsernamesModels;
 import swst.application.errorsHandlers.ExceptionresponsesModel;
 import swst.application.errorsHandlers.ExceptionFoundation;
@@ -62,58 +78,24 @@ public class PublicUserController {
 	}
 
 	public LoginResponseModel authenUser(LoginModel loginUser) {
-		UsernamesModels thisUser = usernameRepository.findByUserName(loginUser.getUserName());
-		if (thisUser == null || !passwordEncoder.matches(loginUser.getUserPassword(), thisUser.getUserPassword())) {
+		UsernamesModels requestUser = usernameRepository.findByUserName(loginUser.getUserName());
+		if (requestUser == null
+				|| !passwordEncoder.matches(loginUser.getUserPassword(), requestUser.getUserPassword())) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_BAD_CREDENTIALS,
 					"[ AUTHEN FAILED ] Username or password doesn't match.");
 		}
-		if (thisUser.getRole() == rolesRepository.findByroleName("suspended")) {
+		if (requestUser.getRole() == rolesRepository.findByroleName("suspended")) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_NOT_ALLOWED, "[ SUS ] This accound is suspended.");
 		}
-		String acceessToken = "";
-		String refreshToken = "";
-		LoginResponseModel loginResponse = new LoginResponseModel(loginUser.getUserName(), acceessToken, refreshToken);
-		return null;
+
+		Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+		String[] roles = { "admin", "customer" };
+		String token = JWT.create().withSubject(loginUser.getUserName())
+				.withExpiresAt(new Date(System.currentTimeMillis() * 600000)).withIssuer("naturegecko")
+				.withArrayClaim("roles", roles).sign(algorithm);
+
+		LoginResponseModel loginResponse = new LoginResponseModel(loginUser.getUserName(), token);
+		return loginResponse;
 	}
-	/*
-	 * public ResponseEntity<JwtTokenModel> userLogin(LoginModel userLogin){
-	 * UsernamesModels thisUser =
-	 * usernameRepository.findByUserName(userLogin.getUserName()); if(thisUser ==
-	 * null || !passwordEncoder.matches(userLogin.getUserPassword(),
-	 * thisUser.getUserPassword() )) { throw new
-	 * ExceptionFoundation(EXCEPTION_CODES.AUTHEN_BAD_CREDENTIALS,
-	 * "[ AUTHEN FAILED ] Username or password doesn't match."); }
-	 * if(thisUser.getRole()==rolesRepository.findByroleName("suspended")) { throw
-	 * new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_NOT_ALLOWED,
-	 * "[ SUS ] THis accound is suspended."); }
-	 * 
-	 * String token = jwtTokenProvider.createJWToken(null, false) return new
-	 * ResponseEntity<>(new JwtTokenModel(token), newHeader, HttpStatus.OK); }
-	 */
-	/*
-	 * public ResponseEntity<JwtTokenModel> userLogin(LoginModel userLogin) {
-	 * UsernamesModels thisUser =
-	 * usernameRepository.findByUserName(userLogin.getUserName()); if (thisUser ==
-	 * null || !passwordEncoder.matches(userLogin.getUserPassword(),
-	 * thisUser.getUserPassword())) { throw new
-	 * ExceptionFoundation(EXCEPTION_CODES.AUTHEN_BAD_CREDENTIALS,
-	 * "[ AUTHEN FAILED ] Username or password doesn't match."); } if
-	 * (thisUser.getRole() == rolesRepository.findByroleName("suspended")) { throw
-	 * new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_NOT_ALLOWED,
-	 * "[ SUS ] THis accound is suspended."); } UsernamePasswordAuthenticationToken
-	 * authenWithToken = new UsernamePasswordAuthenticationToken(
-	 * userLogin.getUserName(), userLogin.getUserPassword()); Authentication
-	 * authentication =
-	 * authenticationManagerBuilder.getObject().authenticate(authenWithToken);
-	 * SecurityContextHolder.getContext().setAuthentication(authentication);
-	 * 
-	 * String token = jwtTokenProvider.createJWToken(authentication, false);
-	 * 
-	 * HttpHeaders newHeader = new HttpHeaders();
-	 * newHeader.add(JwtTokenFilter.AUTHORIZATION_HEADER, "Bearer " + token);
-	 * 
-	 * return new ResponseEntity<>(new JwtTokenModel(token), newHeader,
-	 * HttpStatus.OK); }
-	 */
 
 }

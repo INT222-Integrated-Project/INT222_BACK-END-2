@@ -24,6 +24,10 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import lombok.extern.slf4j.Slf4j;
+import swst.application.authenSecurity.SecurityUtills;
+
+@Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
 	@Override
@@ -53,6 +57,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 					SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 					filterChain.doFilter(request, response);
 				} catch (Exception exc) {
+					log.error("Error logging in : {}", exc.getMessage());
 					response.setHeader("Error", exc.getMessage());
 					response.sendError(HttpStatus.FORBIDDEN.value());
 				}

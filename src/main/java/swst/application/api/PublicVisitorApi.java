@@ -40,7 +40,7 @@ import swst.application.repositories.ColorsRepository;
 import swst.application.repositories.UsernameRepository;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/public")
 @RequiredArgsConstructor
 public class PublicVisitorApi {
 	@Autowired

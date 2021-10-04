@@ -2,33 +2,19 @@ package swst.application.controllers.controller;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
-import swst.application.authenSecurity.filter.CustomAuthenticationFilter;
+import lombok.extern.slf4j.Slf4j;
 import swst.application.entities.Roles;
 import swst.application.entities.UsernamesModels;
 import swst.application.errorsHandlers.ExceptionresponsesModel;
@@ -41,6 +27,7 @@ import swst.application.repositories.RolesRepository;
 import swst.application.repositories.UsernameRepository;
 
 @Service
+@Slf4j
 public class PublicUserController {
 	@Autowired
 	private UsernameRepository usernameRepository;
@@ -77,7 +64,7 @@ public class PublicUserController {
 
 	}
 
-	public LoginResponseModel authenUser(LoginModel loginUser) {
+	public LoginResponseModel authenUser(LoginModel loginUser, HttpServletResponse response) {
 		UsernamesModels requestUser = usernameRepository.findByUserName(loginUser.getUserName());
 		if (requestUser == null
 				|| !passwordEncoder.matches(loginUser.getUserPassword(), requestUser.getUserPassword())) {
@@ -89,11 +76,18 @@ public class PublicUserController {
 		}
 
 		Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-		String[] roles = { "admin", "customer" };
+		String[] roles = { "" };
+		Roles getUserRoles = requestUser.getRole();
+		/*
+		 * for (int i = 0; i < getUserRoles.size(); i++) { log.error("in loop " + i); }
+		 */
+		roles[0] = getUserRoles.getRoleName();
+
 		String token = JWT.create().withSubject(loginUser.getUserName())
 				.withExpiresAt(new Date(System.currentTimeMillis() * 600000)).withIssuer("naturegecko")
 				.withArrayClaim("roles", roles).sign(algorithm);
-
+		
+		response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
 		LoginResponseModel loginResponse = new LoginResponseModel(loginUser.getUserName(), token);
 		return loginResponse;
 	}

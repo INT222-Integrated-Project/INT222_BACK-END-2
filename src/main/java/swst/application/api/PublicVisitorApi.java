@@ -76,8 +76,8 @@ public class PublicVisitorApi {
 
 	// [ userLogin ] Give the user login and token.
 	@PostMapping("/auth/login")
-	public ResponseEntity<?> userLogin(@RequestBody LoginModel userLogin) {
-		return ResponseEntity.ok().body(publicUserController.authenUser(userLogin));
+	public ResponseEntity<?> userLogin(@RequestBody LoginModel userLogin,HttpServletResponse response) {
+		return ResponseEntity.ok().body(publicUserController.authenUser(userLogin,response));
 	}
 
 	// [ listProductWithPage ] Will list product with page, optional with name.

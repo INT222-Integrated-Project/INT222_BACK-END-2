@@ -46,11 +46,11 @@ public class WebSecirityConficuration extends WebSecurityConfigurerAdapter {
 		http.cors();
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		http.authorizeRequests().antMatchers(HttpMethod.GET,"/public/**").permitAll();
-		http.authorizeRequests().antMatchers(HttpMethod.GET,"/public/**").permitAll();
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/public/**").permitAll();
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/public/**").permitAll();
 		http.authorizeRequests().antMatchers("/test/**").permitAll();
-		http.authorizeRequests().antMatchers("/user/**").hasAnyAuthority("customer", "admin");
-		http.authorizeRequests().antMatchers("/staff/**").hasAnyAuthority("staff");
+		http.authorizeRequests().antMatchers("/user/**").hasAnyAuthority("admin", "staff", "customer");
+		http.authorizeRequests().antMatchers("/staff/**").hasAnyAuthority("admin", "staff");
 		http.authorizeRequests().antMatchers("/admin/**").hasAnyAuthority("admin");
 		http.authorizeRequests().anyRequest().authenticated();
 

@@ -1,4 +1,4 @@
-package swst.application.controllers.controller;
+package swst.application.controllers;
 
 import java.util.Date;
 import java.util.List;

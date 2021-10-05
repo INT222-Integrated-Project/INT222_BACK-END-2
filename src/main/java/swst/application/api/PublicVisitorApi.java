@@ -24,9 +24,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
 import swst.application.authenSecurity.UserNameService;
-import swst.application.controllers.controller.ModelController;
-import swst.application.controllers.controller.ProductsController;
-import swst.application.controllers.controller.PublicUserController;
+import swst.application.controllers.ModelController;
+import swst.application.controllers.ProductsController;
+import swst.application.controllers.PublicUserController;
 import swst.application.entities.Brands;
 import swst.application.entities.Colors;
 import swst.application.entities.Models;

@@ -1,4 +1,4 @@
-package swst.application.controllers.controller;
+package swst.application.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

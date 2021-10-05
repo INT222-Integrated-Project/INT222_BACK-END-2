@@ -20,8 +20,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import lombok.RequiredArgsConstructor;
 import swst.application.authenSecurity.TokenUtills;
-import swst.application.controllers.controller.ProductsController;
-import swst.application.controllers.controller.UserController;
+import swst.application.controllers.ProductsController;
+import swst.application.controllers.UserController;
 import swst.application.entities.UsernamesModels;
 import swst.application.models.LoginResponseModel;
 import swst.application.repositories.UsernameRepository;
@@ -50,5 +50,8 @@ public class UsersApi {
 		response.setHeader(HttpHeaders.AUTHORIZATION, "");
 		return ResponseEntity.ok().body(new LoginResponseModel("User was here", ""));
 	}
-
+	
+	// [ addOrders ]
+	
+	// [ cancleUserOrder ]
 }

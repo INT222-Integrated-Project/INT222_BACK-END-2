@@ -2,6 +2,7 @@ package swst.application.api;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import swst.application.authenSecurity.TokenUtills;
 import swst.application.controllers.controller.ProductsController;
 import swst.application.controllers.controller.UserController;
 import swst.application.entities.UsernamesModels;
+import swst.application.models.LoginResponseModel;
 import swst.application.repositories.UsernameRepository;
 
 @RestController
@@ -40,6 +42,13 @@ public class UsersApi {
 	@GetMapping("/myprofile")
 	public ResponseEntity<UsernamesModels> getMyprofile(HttpServletRequest request) {
 		return ResponseEntity.ok().body(usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)));
+	}
+
+	// [ userLogOut ] Will remove a token from user.
+	@GetMapping("/auth/logout")
+	public ResponseEntity<LoginResponseModel> userLogOut(HttpServletRequest request, HttpServletResponse response) {
+		response.setHeader(HttpHeaders.AUTHORIZATION, "");
+		return ResponseEntity.ok().body(new LoginResponseModel("User was here", ""));
 	}
 
 }

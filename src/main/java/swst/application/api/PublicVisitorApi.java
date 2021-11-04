@@ -2,18 +2,14 @@ package swst.application.api;
 
 import java.net.URI;
 import java.util.List;
-
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
-import swst.application.authenSecurity.UserNameService;
 import swst.application.controllers.ModelController;
 import swst.application.controllers.ProductsController;
 import swst.application.controllers.PublicUserController;
@@ -31,13 +26,13 @@ import swst.application.entities.Brands;
 import swst.application.entities.Colors;
 import swst.application.entities.Models;
 import swst.application.entities.Products;
-import swst.application.entities.UsernamesModels;
+import swst.application.entities.ProductsColor;
+import swst.application.models.ActionResponseModel;
 import swst.application.models.CreateNewUserModel;
 import swst.application.models.LoginModel;
-import swst.application.models.LoginResponseModel;
 import swst.application.repositories.BrandsRepository;
 import swst.application.repositories.ColorsRepository;
-import swst.application.repositories.UsernameRepository;
+import swst.application.repositories.ProductsColorRepository;
 
 @RestController
 @RequestMapping("/public")
@@ -45,8 +40,6 @@ import swst.application.repositories.UsernameRepository;
 public class PublicVisitorApi {
 	@Autowired
 	private final PublicUserController publicUserController;
-	@Autowired
-	private final PasswordEncoder passwordEncoder;
 	@Autowired
 	private final ProductsController productsRESTcontroller;
 	@Autowired
@@ -56,28 +49,20 @@ public class PublicVisitorApi {
 	@Autowired
 	private final BrandsRepository brandRepository;
 	@Autowired
-	private final UserNameService userNameService;
-	@Autowired
-	private final UsernameRepository usernameRepository;
-
-	@GetMapping("/user")
-	public ResponseEntity<List<UsernamesModels>> getAllUser() {
-		return ResponseEntity.ok().body(userNameService.getAllUsers());
-	}
+	private final ProductsColorRepository productsColorRepository;
 
 	// [ createNewUser ] Will create new user.
 	@PostMapping("/auth/register")
 	public ResponseEntity<HttpStatus> createNewUser(@RequestPart CreateNewUserModel newUser) {
 		publicUserController.register(newUser);
-		URI uri = URI
-				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/public/auth/register").toString());
-		return ResponseEntity.created(uri).body(null);
+		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/public/auth/register").toString());
+		return ResponseEntity.created(uri).body(HttpStatus.CREATED);
 	}
 
 	// [ userLogin ] Give the user login and token.
 	@PostMapping("/auth/login")
-	public ResponseEntity<?> userLogin(@RequestBody LoginModel userLogin,HttpServletResponse response) {
-		return ResponseEntity.ok().body(publicUserController.authenUser(userLogin,response));
+	public ResponseEntity<?> userLogin(@RequestBody LoginModel userLogin, HttpServletResponse response) {
+		return ResponseEntity.ok().body(publicUserController.authenUser(userLogin, response));
 	}
 
 	// [ listProductWithPage ] Will list product with page, optional with name.
@@ -104,5 +89,12 @@ public class PublicVisitorApi {
 	@GetMapping("/brands")
 	public List<Brands> listAllBrands() {
 		return brandRepository.findAll();
+	}
+
+	// [ listProductColors ] List all product color that belongs to specific product
+	// ID.
+	@GetMapping("/productcolor/{id}")
+	public ResponseEntity<List<ProductsColor>> listProductColors(@PathVariable(name = "id") int caseID) {
+		return ResponseEntity.ok().body(productsColorRepository.findAllBycaseID(caseID));
 	}
 }

@@ -9,12 +9,16 @@ import swst.application.entities.Products;
 
 public interface ProductsRepository extends JpaRepository<Products, Integer> {
 	// List<Products> findAllByPage
-	
+
 	@Query(value = "SELECT p FROM Products p WHERE p.isOnStore = ?1 ORDER BY caseID DESC")
-	Page<Products> findByIsOnStore(int onStore, Pageable pageable);
+	Page<Products> findByIsOnStore(Boolean isOnStore, Pageable pageable);
+
+	//@Query(value = "SELECT p FROM Products p WHERE p.isOnStore = ?1 ORDER BY caseID DESC")
+	//List<Products> findByIsOnStore(Boolean isOnStore, Pageable pageable));
+
+	@Query(value = "SELECT p FROM Products p WHERE p.caseName LIKE %?1% AND p.isOnStore = true ORDER BY caseID DESC")
+	Page<Products> findBycaseNameContainingAndIsOnStoreTrue(String caseName, Pageable pageable);
 	
-	@Query(value = "SELECT p FROM Products p WHERE p.caseName LIKE %?1% ORDER BY caseID DESC")
-	Page<Products> findBycaseNameContaining(String caseName, Pageable pageable);
 	
-	
+	Double findCasePriceByCaseID(int caseID);
 }

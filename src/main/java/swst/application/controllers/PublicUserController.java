@@ -78,14 +78,11 @@ public class PublicUserController {
 
 		String[] roles = { "" };
 		Roles getUserRoles = requestUser.getRole();
-		/*
-		 * for (int i = 0; i < getUserRoles.size(); i++) { log.error("in loop " + i); }
-		 */
 		roles[0] = getUserRoles.getRoleName();
 
 		String token = TokenUtills.createToken(requestUser.getUserName(),roles);
 		response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
-		LoginResponseModel loginResponse = new LoginResponseModel(loginUser.getUserName(), token);
+		LoginResponseModel loginResponse = new LoginResponseModel(loginUser.getUserName().toLowerCase(), token);
 		return loginResponse;
 	}
 

@@ -2,32 +2,38 @@ package swst.application.entities;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import swst.application.models.relationkey.ProductsColorRelationKey;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "productscolor")
+@Table(name = "productcolor")
 public class ProductsColor {
-
-	@EmbeddedId
-	private ProductsColorRelationKey id;
+	@Id
+	@Column(name = "productcolorID")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long productcolorID;
+	
+	@JsonIgnore
+	@Basic(optional = true)
+	private int caseID;
+	
+	@ManyToOne
+	@MapsId(value = "codeColor")
+	@JoinColumn(name = "codeColor", referencedColumnName = "codeColor")
+	private Colors color;
 
 	private String imageCase;
 	private int quantity;
-	
-	/*@JsonIgnore
+/*
 	@ManyToOne
 	@MapsId(value = "caseID")
 	@JoinColumn(name = "caseID", referencedColumnName = "caseID")
-	private Products caseID;
-*/
-	@ManyToOne
-	@MapsId(value ="codeColor")
-	@JoinColumn(name = "codeColor" , referencedColumnName = "codeColor")
-	private Colors codeColor;
+	private Products caseID;*/
+
 }

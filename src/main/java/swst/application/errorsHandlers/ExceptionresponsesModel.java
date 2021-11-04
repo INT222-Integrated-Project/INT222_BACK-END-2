@@ -17,6 +17,9 @@ public class ExceptionresponsesModel {
 		SAVE_IMAGE_FAILED(2001), // Can't save image.
 		SAVE_DUPLICATED(2002), // That name is already existed and can't be repeated.
 		SAVE_DELETE_FAILED(2003), // Unable to delete. lol
+		SAVE_OBJECT_EXISTED(2004),// Saving failed because the object is already exist.
+		SAVE_NOT_THE_OWNER(2005),// The user is not an owner of the object.
+		
 
 		// Authentication
 		AUTHEN_BAD_CREDENTIALS(3001), // Username or password is incorrect. Or both!
@@ -30,14 +33,17 @@ public class ExceptionresponsesModel {
 
 		// Unavailable, at least for now.
 		FEATURE_NOT_IMPLEMENTED(4001), // Not yet done.
-		FEATURE_KNOWN_BUG(4002), // We just know that it is going to be an error. At least the application
-									// doesn't quit.
+		FEATURE_KNOWN_BUG(4002), // We just know that it is going to be an error. At least the application doesn't rest in peace.
 		FEATURE_TOO_DANGEROUS_TO_HAVE_IT(4003), // We won't let you use it...
 
 		// Application core infrastructure
 		CORE_INIT_FAILED(5001), // File initialization failed.
 		CORE_FILE_DUPLICATED(5002), // File duplicated.
-
+		
+		// User application
+		SHOP_NOT_ON_STORE(6001), // Sorry! they don't want to sell this product!
+		SHOP_NOT_ENOUGH_GOODS_FOR_SELL(6002), // Have 3 but order 4.
+		
 		// Others
 		DEAD(9999); // Just stupidly died with an unknown reason.
 

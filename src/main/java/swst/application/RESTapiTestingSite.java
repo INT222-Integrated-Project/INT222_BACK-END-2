@@ -1,9 +1,18 @@
 package swst.application;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import swst.application.entities.Brands;
@@ -17,6 +26,9 @@ import swst.application.entities.Products;
 import swst.application.entities.ProductsColor;
 import swst.application.entities.Roles;
 import swst.application.entities.UsernamesModels;
+import swst.application.errorsHandlers.ExceptionFoundation;
+import swst.application.errorsHandlers.ExceptionresponsesModel.EXCEPTION_CODES;
+import swst.application.models.ActionResponseModel;
 import swst.application.repositories.BrandsRepository;
 import swst.application.repositories.ColorsRepository;
 import swst.application.repositories.ModelsRepository;
@@ -65,6 +77,27 @@ public class RESTapiTestingSite {
 	 * FindAll
 	 */
 
+	@PostMapping("/post/orderdetail/{orderId}")
+	public ActionResponseModel addOrderDetail(@RequestPart OrderDetail orderDetail, @PathVariable long orderId) {
+		Optional<Orders> serchOrder = ordersRepository.findById(orderId);
+		orderDetail.setOrders(serchOrder.get());
+		
+		orderDetailRepository.save(orderDetail);
+		return new ActionResponseModel("Post orderdetail", true);
+	}
+
+	@PostMapping("/postpro")
+	public ActionResponseModel postPro(@RequestBody Products product) {
+		productsRepository.save(product);
+		return new ActionResponseModel("Post product", true);
+	}
+
+	@GetMapping("/test")
+	public Page<Products> finePro() {
+		Pageable sendPageRequest = PageRequest.of(0, 9);
+		return productsRepository.findByIsOnStore(true, sendPageRequest);
+	}
+
 	// RA_Products
 	@RequestMapping("/colors")
 	public List<Colors> fineAllColor() {
@@ -95,33 +128,32 @@ public class RESTapiTestingSite {
 	public List<Brands> findAllBrands() {
 		return brandsRepository.findAll();
 	}
-	
+
 	// RA_UserModels
 	@RequestMapping("/roles")
-	public List<Roles> fineAllRoles(){
+	public List<Roles> fineAllRoles() {
 		return rolesRepository.findAll();
 	}
-	
+
 	@RequestMapping("/username")
-	public List<UsernamesModels> finrAllUserName(){
+	public List<UsernamesModels> finrAllUserName() {
 		return usernameRepository.findAll();
 	}
-	
+
 	// RC_OrderModels
 	@RequestMapping("/orders")
-	public List<Orders> findAllOrders(){
+	public List<Orders> findAllOrders() {
 		return ordersRepository.findAll();
 	}
-	
+
 	@RequestMapping("/orderdetail")
-	public List<OrderDetail> findAllOrderDeatil(){
+	public List<OrderDetail> findAllOrderDeatil() {
 		return orderDetailRepository.findAll();
 	}
-	
+
 	@RequestMapping("/status")
-	public List<OrderStatus> fineAllStatus(){
+	public List<OrderStatus> fineAllStatus() {
 		return statusRepository.findAll();
 	}
-	
 
 }

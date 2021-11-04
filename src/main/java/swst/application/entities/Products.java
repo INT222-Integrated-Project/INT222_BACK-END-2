@@ -1,6 +1,7 @@
 package swst.application.entities;
 
 import java.util.List;
+
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
@@ -18,16 +19,16 @@ public class Products {
 
 	private String caseName;
 	private String caseDescription;
-	private Double casePrice;
+	private float casePrice;
 
 	private int usernameID;
 
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private String caseDate;
 
-	@ManyToMany
-	@JoinTable(name = "productscolor", joinColumns = @JoinColumn(name = "caseID", referencedColumnName = "caseID"), inverseJoinColumns = @JoinColumn(name = "codeColor", referencedColumnName = "codeColor"))
-	private List<Colors> colors;
+	@OneToMany(cascade = CascadeType.MERGE)
+	@JoinColumn(name = "caseID", referencedColumnName = "caseID")
+	private List<ProductsColor> productColor;
 
 	@ManyToMany
 	@JoinTable(name = "productmodel", joinColumns = @JoinColumn(name = "caseID", referencedColumnName = "caseID"), inverseJoinColumns = @JoinColumn(name = "modelID", referencedColumnName = "modelID"))
@@ -35,6 +36,15 @@ public class Products {
 
 	private String productImage;
 
-	private int isOnStore;
+	private Boolean isOnStore;
 
 }
+
+/*
+ * @ManyToMany
+ * 
+ * @JoinTable(name = "productscolor", joinColumns = @JoinColumn(name = "caseID",
+ * referencedColumnName = "caseID"), inverseJoinColumns = @JoinColumn(name =
+ * "codeColor", referencedColumnName = "codeColor")) private List<Colors>
+ * colors;
+ */

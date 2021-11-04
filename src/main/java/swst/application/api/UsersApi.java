@@ -1,29 +1,38 @@
 package swst.application.api;
 
-import javax.servlet.ServletRequest;
+import java.net.URI;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
 import swst.application.authenSecurity.TokenUtills;
+import swst.application.controllers.ProductOrderController;
 import swst.application.controllers.ProductsController;
 import swst.application.controllers.UserController;
+import swst.application.entities.OrderDetail;
+import swst.application.entities.OrderStatus;
+import swst.application.entities.Orders;
 import swst.application.entities.UsernamesModels;
+import swst.application.models.ActionResponseModel;
 import swst.application.models.LoginResponseModel;
+import swst.application.repositories.OrderDetailRepository;
+import swst.application.repositories.OrderStatusRepository;
+import swst.application.repositories.OrdersRepository;
 import swst.application.repositories.UsernameRepository;
 
 @RestController
@@ -37,6 +46,14 @@ public class UsersApi {
 	private final UsernameRepository usernameRepository;
 	@Autowired
 	private final UserController userController;
+	@Autowired
+	private final ProductOrderController productOrderController;
+	@Autowired
+	private final OrdersRepository ordersRepository;
+	@Autowired
+	private final OrderStatusRepository orderStatusRepository;
+	@Autowired
+	private final OrderDetailRepository orderDetailRepository;
 
 	// [ getMyprofile ] Will return a profile of that user.
 	@GetMapping("/myprofile")
@@ -50,8 +67,13 @@ public class UsersApi {
 		response.setHeader(HttpHeaders.AUTHORIZATION, "");
 		return ResponseEntity.ok().body(new LoginResponseModel("User was here", ""));
 	}
-	
+
 	// [ addOrders ]
-	
+	@PostMapping("/addOrder")
+	public ResponseEntity<Orders> addOrder(@RequestPart Orders newOrders, HttpServletRequest request) {
+		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/addOrder").toString());
+		return ResponseEntity.created(uri).body(productOrderController.addOrder(request, newOrders));
+	}
+
 	// [ cancleUserOrder ]
 }

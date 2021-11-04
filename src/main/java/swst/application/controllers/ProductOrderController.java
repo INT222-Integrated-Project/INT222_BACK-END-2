@@ -91,24 +91,26 @@ public class ProductOrderController {
 		for (int i = 0; i < detailsNumber; i++) {
 			OrderDetail currentOrder = orderDetailList.get(i);
 			OrderDetail newOrder = new OrderDetail();
-			ProductsColor targerProductColor = productsColorRepository.findById(currentOrder.getProductcolorID()).orElse(throw(-> new ExceptionFoundation(null, null)));
-			if (targerProductColor != null) {
-				Optional<Products> targerProduct = productsRepository.findById(targerProductColor.get().getCaseID());
-
-				newOrder.setQuantityOrder(currentOrder.getQuantityOrder());
-				newOrder.setUnitPrice(targerProduct.get().getCasePrice());
-				newOrder.setOrders(addOrder);
-				newOrder.setProductcolorID(currentOrder.getProductcolorID());
-				
-				orderQuantityList[i] = newOrder.getQuantityOrder();
-				productColorIdList[i] = newOrder.getProductcolorID();
-				
-				orderDetailRepository.save(newOrder);
-
-			} else {
-				allowContinueSaving = false;
-				break;
+			Optional<ProductsColor> targerProductColor = productsColorRepository
+					.findById(currentOrder.getProductcolorID());
+			if (targerProductColor == null) {
+				throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+						"[ NOT FOUND ] Targeted product variation not found. ");
 			}
+			Optional<Products> targerProduct = productsRepository.findById(targerProductColor.get().getCaseID());
+			if (targerProduct == null) {
+				throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+						"[ NOT FOUND ] Targeted product not found. ");
+			}
+			newOrder.setQuantityOrder(currentOrder.getQuantityOrder());
+			newOrder.setUnitPrice(targerProduct.get().getCasePrice());
+			newOrder.setOrders(addOrder);
+			newOrder.setProductcolorID(currentOrder.getProductcolorID());
+
+			orderQuantityList[i] = newOrder.getQuantityOrder();
+			productColorIdList[i] = newOrder.getProductcolorID();
+
+			orderDetailRepository.save(newOrder);
 
 		}
 		return new LoopSaveOrderDetail(productColorIdList, orderQuantityList, allPrice, allowContinueSaving);

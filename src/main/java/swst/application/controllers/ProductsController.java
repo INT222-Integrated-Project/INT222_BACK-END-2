@@ -159,4 +159,25 @@ public class ProductsController {
 		return productsColorRepository.findAllBycaseID(productId);
 	}
 
+	// [ listProductByUserId ]
+	public Page<Products> listProductByUserId(int page, int size, HttpServletRequest request) {
+		UsernamesModels owner = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
+
+		if (page < 0) {
+			page = 0;
+		}
+		if (size < 1 || size > maxsizeProducts) {
+			size = defaultSizeProduct;
+		}
+		Pageable sendPageRequest = PageRequest.of(page, size);
+		Page<Products> result;
+
+		result = productsRepository.findByUsernameID(owner.getUserNameID(), sendPageRequest);
+
+		if (result.getTotalPages() < page + 1) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Seems like you don't have any items here, try to add some?");
+		}
+		return result;
+	}
+
 }

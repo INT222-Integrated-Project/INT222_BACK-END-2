@@ -74,10 +74,6 @@ public class UsersApi {
 
 	// [ getMyOrder ]
 	@GetMapping("/myOrders")
-	/*public ResponseEntity<Page<Orders>> getMyOrder(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "15") int size, HttpServletRequest request) {
-		return ResponseEntity.ok().body(productOrderController.listOrderByUserID(page, size, request));
-	}*/
 	public Page<Orders> getMyOrder(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "15") int size, HttpServletRequest request) {
 		return productOrderController.listOrderByUserID(page, size, request);

@@ -14,4 +14,5 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
 
 	@Query(value = "SELECT o FROM Orders o WHERE o.userNameID = ?1 ORDER BY orderID DESC")
 	Page<Orders> findByUserNameID(int userNameID, Pageable pageable);
+	
 }

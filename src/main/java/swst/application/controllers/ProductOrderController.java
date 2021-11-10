@@ -30,9 +30,8 @@ import swst.application.repositories.OrderStatusRepository;
 import swst.application.repositories.OrdersRepository;
 import swst.application.repositories.ProductsColorRepository;
 import swst.application.repositories.ProductsRepository;
-import swst.application.repositories.RolesRepository;
 import swst.application.repositories.UsernameRepository;
-
+	
 @Service
 @PropertySource("userdefined.properties")
 @Slf4j
@@ -49,8 +48,6 @@ public class ProductOrderController {
 	private ProductsColorRepository productsColorRepository;
 	@Autowired
 	private OrderStatusRepository orderStatusRepository;
-	@Autowired
-	private RolesRepository rolesRepository;
 
 	@Value("${application.pagerequest.maxsize.orders}")
 	private int maxsizeOrders;
@@ -78,6 +75,9 @@ public class ProductOrderController {
 
 		return result;
 	}
+	
+	// [ ListOrderByProductId ]
+	
 
 	// [ addOrder ]
 	public ActionResponseModel addOrder(HttpServletRequest request, Orders orders) {
@@ -170,10 +170,9 @@ public class ProductOrderController {
 				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 						"[ NOT FOUND ] Order with this ID is nit exist."));
 
-		if (currentorder.getUserNameID() != currentUserName.getUserNameID()
-				|| currentUserName.getRole() != rolesRepository.findById(2).get()) {
+		if (currentorder.getUserNameID() != currentUserName.getUserNameID()) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_NOT_THE_OWNER,
-					"[ NOT ALLOWED ] This order is not belong to you or you are not an admin.");
+					"[ NOT ALLOWED ] This order is not belong to you.");
 		}
 		if (currentorder.getOrderStatus() != orderStatusRepository.findById(1).get()) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ALLOW_TO_CANCLE,
@@ -183,6 +182,20 @@ public class ProductOrderController {
 		currentorder.setOrderStatus(status);
 		ordersRepository.save(currentorder);
 		return new ActionResponseModel("Change status to " + status.getStatus(), true);
+	}
+
+	// [ changeOrderStatusByStaff]
+	public ActionResponseModel changeOrderStatusByStaff(long orderId, int statusId) {
+		Orders currentOrder = ordersRepository.findById(orderId)
+				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+						"[ NOT FOUND ] Order with this ID is nit exist."));
+		OrderStatus status = orderStatusRepository.findById(statusId)
+				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+						"[ NOT FOUND ] This status with this ID is not exist."));
+
+		currentOrder.setOrderStatus(status);
+		ordersRepository.save(currentOrder);
+		return new ActionResponseModel("Change status for order " + currentOrder.getOrderID() + " to " + status.getStatus(), true);
 	}
 
 	// [Delete order]

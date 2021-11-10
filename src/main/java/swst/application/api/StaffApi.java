@@ -5,8 +5,10 @@ import java.net.URI;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
 import swst.application.authenSecurity.TokenUtills;
+import swst.application.controllers.ProductOrderController;
 import swst.application.controllers.ProductsController;
 import swst.application.entities.Products;
 import swst.application.models.ActionResponseModel;
@@ -36,6 +39,15 @@ public class StaffApi {
 	private final UsernameRepository usernameRepository;
 	@Autowired
 	private final ProductsController productsController;
+	@Autowired
+	private final ProductOrderController productOrderController;
+
+	// [ listProductByMyUsername ]
+	@GetMapping("/myshop")
+	public ResponseEntity<Page<Products>> listProductByMyUsername(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "15") int size, HttpServletRequest request) {
+		return ResponseEntity.ok().body(productsController.listProductByUserId(page, size, request));
+	}
 
 	// [ createNewproduct ]
 	@PostMapping(value = "/products/add", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -49,7 +61,6 @@ public class StaffApi {
 	// [ editExistingProduct ]
 	@PutMapping(value = "/product/edit", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> editExistingProduct(@RequestBody Products incomingproduct, HttpServletRequest request) {
-
 		URI uri = URI
 				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/product/add").toString());
 		return ResponseEntity.created(uri).body(incomingproduct);
@@ -63,19 +74,13 @@ public class StaffApi {
 		return ResponseEntity.ok().body(action);
 	}
 
-	/*
-	 * @PostMapping("/createProduct") public ResponseEntity<?>
-	 * createNewproductTextOnly(HttpServletRequest request, Products
-	 * incomingNewProduct) { Products newproduct = new Products();
-	 * 
-	 * int userId =
-	 * usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)).
-	 * getUserNameID(); //newproduct.
-	 * 
-	 * productsRepository.save(newproduct); URI uri = URI
-	 * .create(ServletUriComponentsBuilder.fromCurrentContextPath().path(
-	 * "/staff/createProduct").toString()); return
-	 * ResponseEntity.created(uri).body(null); }
-	 */
+	// [ changeOrderStatus ]
+	@PostMapping("/changestatus/{orderId}/{statusid}")
+	public ResponseEntity<ActionResponseModel> changeOrderStatus(@PathVariable long orderId,
+			@PathVariable int statusid) {
+		URI uri = URI.create(
+				ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/cancleorder/" + orderId).toString());
+		return ResponseEntity.created(uri).body(productOrderController.changeOrderStatusByStaff(orderId, statusid));
+	}
 
 }

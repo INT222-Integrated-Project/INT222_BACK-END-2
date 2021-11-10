@@ -1,8 +1,5 @@
 package swst.application.entities;
 
-import java.io.Serializable;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,15 +8,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.OnDelete;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "orderdetail")
-public class OrderDetail implements Serializable {
+public class OrderDetail {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,5 +38,4 @@ public class OrderDetail implements Serializable {
 	@JoinColumn(name = "orderid", nullable = false)
 	@JsonIgnore
 	private Orders orders;
-
 }

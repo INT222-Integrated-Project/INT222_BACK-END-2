@@ -67,8 +67,10 @@ public class PublicVisitorApi {
 
 	// [ listProductWithPage ] Will list product with page, optional with name.
 	@GetMapping("/products")
-	public Page<Products> listProductWithPage(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "9") int size, @RequestParam(defaultValue = "") String searchname) {
+	public Page<Products> listProductWithPage(
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "9") int size, 
+			@RequestParam(defaultValue = "") String searchname) {
 		return productsRESTcontroller.listProductOnStore(page, size, searchname);
 	}
 

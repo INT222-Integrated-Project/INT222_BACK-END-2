@@ -1,23 +1,23 @@
 package swst.application.controllers;
 
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import swst.application.authenSecurity.TokenUtills;
 import swst.application.entities.OrderDetail;
+import swst.application.entities.OrderStatus;
 import swst.application.entities.Orders;
 import swst.application.entities.Products;
 import swst.application.entities.ProductsColor;
@@ -30,10 +30,11 @@ import swst.application.repositories.OrderStatusRepository;
 import swst.application.repositories.OrdersRepository;
 import swst.application.repositories.ProductsColorRepository;
 import swst.application.repositories.ProductsRepository;
+import swst.application.repositories.RolesRepository;
 import swst.application.repositories.UsernameRepository;
 
 @Service
-@PropertySource("")
+@PropertySource("userdefined.properties")
 @Slf4j
 public class ProductOrderController {
 	@Autowired
@@ -48,45 +49,68 @@ public class ProductOrderController {
 	private ProductsColorRepository productsColorRepository;
 	@Autowired
 	private OrderStatusRepository orderStatusRepository;
+	@Autowired
+	private RolesRepository rolesRepository;
+
+	@Value("${application.pagerequest.maxsize.orders}")
+	private int maxsizeOrders;
+
+	@Value("${application.pagerequest.defaultsize.orders}")
+	private int defaultSizeOrders;
+
+	// [ ListOrderByUserID]
+	public Page<Orders> listOrderByUserID(int page, int size, HttpServletRequest request) {
+		if (page < 0) {
+			page = 0;
+		}
+		if (size < 1 || size > defaultSizeOrders) {
+			size = defaultSizeOrders;
+		}
+
+		int currentUser = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)).getUserNameID();
+
+		Pageable sendPageRequest = PageRequest.of(page, size);
+		Page<Orders> result = ordersRepository.findByUserNameID(currentUser, sendPageRequest);
+
+		if (result.getTotalPages() < page + 1) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :(");
+		}
+
+		return result;
+	}
 
 	// [ addOrder ]
-	public Orders addOrder(HttpServletRequest request, Orders orders) {
+	public ActionResponseModel addOrder(HttpServletRequest request, Orders orders) {
 
 		int userNameId = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)).getUserNameID();
 		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-		Timestamp paymentTime = new Timestamp(System.currentTimeMillis() + 1000 * 60 * 60 * 120);
 		Orders addOrder = new Orders();
 
 		addOrder.setUserNameID(userNameId);
 		addOrder.setDateTime(currentTime.toString());
 		addOrder.setAllPrice(0);
-		addOrder.setPaymentDate(paymentTime.toString());
+		addOrder.setPaymentDate(null);
 		addOrder.setOrderStatus(orderStatusRepository.findByStatus("To Pay"));
+
+		log.info("" + addOrder.getDateTime());
+
 		addOrder = ordersRepository.save(addOrder);
 
-		LoopSaveOrderDetail productColorIdList = loopSaveOrderDetails(orders.getOrderDetails(), addOrder);
-		if (!productColorIdList.getIsContinueable()) {
-			ordersRepository.deleteById(addOrder.getOrderID());
-			throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ENOUGH_GOODS_FOR_SELL,
-					"[ NOT ENOUGH ITEM FOR SELL ] This store will not be able to complete your order because there are not enough item for sell.");
-		}
+		loopSaveOrderDetails(orders.getOrderDetails(), addOrder);
+		addOrder.setOrderDetails(orders.getOrderDetails());
 
-		// orders.setUserNameID(ownerModel.getUserNameID());
-
-		// ordersRepository.save(addOrder);
-		return addOrder;// new ActionResponseModel("Adding orders.", true);
+		return new ActionResponseModel("Adding orders.", true);
 	}
 
 	// [ loopSaveOrderDetails ]
-	private LoopSaveOrderDetail loopSaveOrderDetails(List<OrderDetail> orderDetailList, Orders addOrder) {
+	private Orders loopSaveOrderDetails(List<OrderDetail> orderDetailList, Orders addOrder) {
 
 		int detailsNumber = orderDetailList.size();
 
 		long[] productColorIdList = new long[detailsNumber];
 		int[] orderQuantityList = new int[detailsNumber];
 
-		Boolean allowContinueSaving = true;
-		Double allPrice = 0.0;
+		float allPrice = 0.0f;
 
 		for (int i = 0; i < detailsNumber; i++) {
 			OrderDetail currentOrder = orderDetailList.get(i);
@@ -94,66 +118,81 @@ public class ProductOrderController {
 			Optional<ProductsColor> targerProductColor = productsColorRepository
 					.findById(currentOrder.getProductcolorID());
 			if (targerProductColor == null) {
-				throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
-						"[ NOT FOUND ] Targeted product variation not found. ");
+				deleteOrder(addOrder.getOrderID());
+				throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ON_STORE,
+						"[ NOT ON STORE ] This item is not exist or not for sell.");
 			}
 			Optional<Products> targerProduct = productsRepository.findById(targerProductColor.get().getCaseID());
 			if (targerProduct == null) {
-				throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
-						"[ NOT FOUND ] Targeted product not found. ");
+				deleteOrder(addOrder.getOrderID());
+				throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ON_STORE,
+						"[ NOT ON STORE ] This item is not exist or not for sell.");
 			}
 			newOrder.setQuantityOrder(currentOrder.getQuantityOrder());
 			newOrder.setUnitPrice(targerProduct.get().getCasePrice());
 			newOrder.setOrders(addOrder);
 			newOrder.setProductcolorID(currentOrder.getProductcolorID());
 
+			allPrice += (newOrder.getQuantityOrder() * newOrder.getUnitPrice());
 			orderQuantityList[i] = newOrder.getQuantityOrder();
 			productColorIdList[i] = newOrder.getProductcolorID();
 
 			orderDetailRepository.save(newOrder);
 
 		}
-		return new LoopSaveOrderDetail(productColorIdList, orderQuantityList, allPrice, allowContinueSaving);
+
+		for (int i = 0; i < productColorIdList.length; i++) {
+			ProductsColor currentProduct = productsColorRepository.findById(productColorIdList[i])
+					.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+							"[ NOT FOUND ] Product of this type is not exist."));
+			currentProduct.setQuantity(currentProduct.getQuantity() - orderQuantityList[i]);
+			productsColorRepository.save(currentProduct);
+		}
+
+		Optional<ProductsColor> newPro = productsColorRepository.findById((long) 1);
+		newPro.get().setQuantity(newPro.get().getQuantity() + 1);
+		productsColorRepository.save(newPro.get());
+
+		addOrder.setAllPrice(allPrice);
+		addOrder = ordersRepository.save(addOrder);
+		return addOrder;
 	}
 
-	// orderDetailRepository.save(newOrder);
+	// [ Change Order Status ]
+	public ActionResponseModel changeOrderStatus(int statusId, long orderId, HttpServletRequest request) {
+		UsernamesModels currentUserName = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
 
-	// currentOrder.setOrder(orderSavedTo);
+		OrderStatus status = orderStatusRepository.findById(statusId)
+				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+						"[ NOT FOUND ] This status with this ID is nit exist."));
 
-	// orderDetailRepository.save(currentOrder);
-	// ProductsColor currentProduct =
-	// productsColorRepository.getById(currentOrder.getOrderdetailID());
-	// log.error(currentProduct.getCaseID()+"");
-	// int productId = currentProduct.getCaseID();
-	// int availableQuantity = currentProduct.getQuantity();
-	/* log.info(availableQuantity + ""); */
+		Orders currentorder = ordersRepository.findById(orderId)
+				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+						"[ NOT FOUND ] Order with this ID is nit exist."));
 
-	/*
-	 * currentOrder.setUnitPrice(productsRepository.findById(productId).get().
-	 * getCasePrice()); productColorIdList[i] = currentOrder.getProductcolorID();
-	 * orderQuantityList[i] = currentOrder.getQuantityOrder(); if (availableQuantity
-	 * < currentOrder.getQuantityOrder()) { allowContinueSaving = false; break; }
-	 */
+		if (currentorder.getUserNameID() != currentUserName.getUserNameID()
+				|| currentUserName.getRole() != rolesRepository.findById(2).get()) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_NOT_THE_OWNER,
+					"[ NOT ALLOWED ] This order is not belong to you or you are not an admin.");
+		}
+		if (currentorder.getOrderStatus() != orderStatusRepository.findById(1).get()) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ALLOW_TO_CANCLE,
+					"[ PAID ] You paid for this product or is not in a status that you will be able to cancle.");
+		}
 
-	// [ loopSaveProductQuantity ]
-	private Boolean loopSaveProductQuantity() {
-		return false;
+		currentorder.setOrderStatus(status);
+		ordersRepository.save(currentorder);
+		return new ActionResponseModel("Change status to " + status.getStatus(), true);
 	}
 
-	// []
+	// [Delete order]
+	private void deleteOrder(long id) {
+		ordersRepository.deleteById(id);
+	}
 
-	// []
-
-	// []
-
-	// []
 }
 
-@Data
-@AllArgsConstructor
-class LoopSaveOrderDetail {
-	private long[] productColorIdList;
-	private int[] quantity;
-	private Double allPrice;
-	private Boolean isContinueable;
-}
+/*
+ * Status List [ 1 ] To Pay [ 2 ] To Ship [ 3 ] To Receive [ 4 ] Completed [ 5 ]
+ * Cancelled
+ */

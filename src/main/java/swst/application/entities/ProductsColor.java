@@ -1,7 +1,6 @@
 package swst.application.entities;
 
 import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -18,11 +17,11 @@ public class ProductsColor {
 	@Column(name = "productcolorID")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long productcolorID;
-	
+
 	@JsonIgnore
 	@Basic(optional = true)
 	private int caseID;
-	
+
 	@ManyToOne
 	@MapsId(value = "codeColor")
 	@JoinColumn(name = "codeColor", referencedColumnName = "codeColor")
@@ -30,10 +29,4 @@ public class ProductsColor {
 
 	private String imageCase;
 	private int quantity;
-/*
-	@ManyToOne
-	@MapsId(value = "caseID")
-	@JoinColumn(name = "caseID", referencedColumnName = "caseID")
-	private Products caseID;*/
-
 }

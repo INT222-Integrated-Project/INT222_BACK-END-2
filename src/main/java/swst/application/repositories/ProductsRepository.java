@@ -18,7 +18,6 @@ public interface ProductsRepository extends JpaRepository<Products, Integer> {
 
 	@Query(value = "SELECT p FROM Products p WHERE p.caseName LIKE %?1% AND p.isOnStore = true ORDER BY caseID DESC")
 	Page<Products> findBycaseNameContainingAndIsOnStoreTrue(String caseName, Pageable pageable);
-	
-	
+		
 	Double findCasePriceByCaseID(int caseID);
 }

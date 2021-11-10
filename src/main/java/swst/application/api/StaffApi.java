@@ -39,8 +39,7 @@ public class StaffApi {
 
 	// [ createNewproduct ]
 	@PostMapping(value = "/products/add", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Products> createNewproduct(@RequestBody Products products,
-			HttpServletRequest request) {
+	public ResponseEntity<Products> createNewproduct(@RequestBody Products products, HttpServletRequest request) {
 		productsController.createNewproductTextOnly(TokenUtills.getUserNameFromToken(request), products);
 		URI uri = URI
 				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/product/add").toString());
@@ -60,10 +59,9 @@ public class StaffApi {
 	@PostMapping("/product/onstore/{id}")
 	public ResponseEntity<ActionResponseModel> toggleOnStore(@PathVariable(name = "id") int productId,
 			HttpServletRequest request) {
-		ActionResponseModel action = productsController.toggleProduct(productId,request);
+		ActionResponseModel action = productsController.toggleProduct(productId, request);
 		return ResponseEntity.ok().body(action);
 	}
-	
 
 	/*
 	 * @PostMapping("/createProduct") public ResponseEntity<?>

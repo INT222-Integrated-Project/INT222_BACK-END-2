@@ -5,16 +5,20 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.criteria.Order;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -68,12 +72,29 @@ public class UsersApi {
 		return ResponseEntity.ok().body(new LoginResponseModel("User was here", ""));
 	}
 
+	// [ getMyOrder ]
+	@GetMapping("/myOrders")
+	/*public ResponseEntity<Page<Orders>> getMyOrder(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "15") int size, HttpServletRequest request) {
+		return ResponseEntity.ok().body(productOrderController.listOrderByUserID(page, size, request));
+	}*/
+	public Page<Orders> getMyOrder(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "15") int size, HttpServletRequest request) {
+		return productOrderController.listOrderByUserID(page, size, request);
+	}
+
 	// [ addOrders ]
 	@PostMapping("/addOrder")
-	public ResponseEntity<Orders> addOrder(@RequestPart Orders newOrders, HttpServletRequest request) {
+	public ResponseEntity<ActionResponseModel> addOrder(@RequestPart Orders newOrders, HttpServletRequest request) {
 		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/addOrder").toString());
 		return ResponseEntity.created(uri).body(productOrderController.addOrder(request, newOrders));
 	}
 
 	// [ cancleUserOrder ]
+	@PostMapping("/cancleorder/{orderId}")
+	public ResponseEntity<ActionResponseModel> cancleOrder(@PathVariable long orderId, HttpServletRequest request) {
+		URI uri = URI.create(
+				ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/cancleorder/" + orderId).toString());
+		return ResponseEntity.created(uri).body(productOrderController.changeOrderStatus(5, orderId, request));
+	}
 }

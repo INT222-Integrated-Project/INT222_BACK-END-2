@@ -20,8 +20,8 @@ public interface UsernameRepository extends JpaRepository<UsernamesModels, Integ
 
 	boolean existsByPhoneNumber(String phoneNumber);
 
-	@Query(value = "SELECT u FROM UsernamesModels u WHERE u.userName LIKE %?1% OR u.email LIKE %?1%")
-	Page<UsernamesModels> findByUserNameOrEmail(String searchContent, Pageable pageable);
+	@Query(value = "SELECT u FROM UsernamesModels u WHERE u.userName LIKE %?1% OR u.email LIKE %?1% ORDER BY u.userNameID DESC")
+	Page<UsernamesModels> findByUserNameContainingOrEmailContaining(String searchContent, Pageable pageable);
 
 	@Query(value = "SELECT u FROM UsernamesModels u WHERE u.phoneNumber LIKE ?1%")
 	List<UsernamesModels> findByPhoneNumber(String searchContent);

@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import swst.application.authenSecurity.TokenUtills;
 import swst.application.entities.Roles;
 import swst.application.entities.UsernamesModels;
@@ -34,6 +35,7 @@ import swst.application.repositories.UsernameRepository;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
 	@Autowired
@@ -110,15 +112,11 @@ public class UserController {
 		}
 		Pageable sendPageRequest = PageRequest.of(page, size);
 		Page<UsernamesModels> result;
-		if (searchContent == "" || searchContent == null) {
-			result = usernameRepository.findAll(sendPageRequest);
-		} else {
-			result = usernameRepository.findByUserNameOrEmail(searchContent, sendPageRequest);
-			if (result.getTotalPages() < page + 1) {
-				throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :(");
-			}
+
+		result = usernameRepository.findByUserNameContainingOrEmailContaining(searchContent, sendPageRequest);
+		if (result.getTotalPages() < page + 1) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :(");
 		}
-		result = usernameRepository.findAll(sendPageRequest);
 		return result;
 	}
 
@@ -190,7 +188,7 @@ public class UserController {
 			throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_NOT_ALLOWED,
 					"[ NOPE ] Admins are not permitted to resign.");
 		}
-		
+
 		int alLength = 10;
 		int aal = 65;
 		int zal = 90;
@@ -203,7 +201,6 @@ public class UserController {
 			buffer.append((char) ramdomLimitedInt);
 		}
 
-
 		currentUser.setAddress("[ DELETED ACCOUNT ]");
 		currentUser.setEmail(null);
 		currentUser.setFirstName("[ DELETED ACCOUNT ]");
@@ -211,7 +208,7 @@ public class UserController {
 		currentUser.setPhoneNumber(buffer.toString());
 		currentUser.setProfileImage("profile-default");
 		currentUser.setRole(rolesRepository.findByroleName("suspended"));
-		
+
 		usernameRepository.save(currentUser);
 
 		return new ActionResponseModel("[ DELETED ] Your account has been deleted.", true);

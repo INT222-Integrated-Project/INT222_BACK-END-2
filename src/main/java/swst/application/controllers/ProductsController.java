@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import lombok.extern.slf4j.Slf4j;
 import swst.application.authenSecurity.TokenUtills;
 import swst.application.entities.Products;
 import swst.application.entities.ProductsColor;
@@ -28,7 +27,6 @@ import swst.application.repositories.UsernameRepository;
 
 @Service
 @PropertySource("userdefined.properties")
-@Slf4j
 public class ProductsController {
 
 	@Autowired
@@ -57,18 +55,11 @@ public class ProductsController {
 		Pageable sendPageRequest = PageRequest.of(page, size);
 		Page<Products> result;
 
-		if (searchname == "" || searchname == null) {
-			result = productsRepository.findByIsOnStore(true, sendPageRequest);
-		} else {
-			result = productsRepository.findBycaseNameContainingAndIsOnStoreTrue(searchname, sendPageRequest);
-			if (result.getTotalPages() < page + 1) {
-				throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :(");
-			}
-		}
-
+		result = productsRepository.findBycaseNameContainingAndIsOnStoreTrue(searchname, sendPageRequest);
 		if (result.getTotalPages() < page + 1) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :(");
 		}
+
 		return result;
 	}
 

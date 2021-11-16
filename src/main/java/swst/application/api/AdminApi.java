@@ -33,6 +33,7 @@ import swst.application.repositories.UsernameRepository;
 @RestController
 @RequestMapping("/admin")
 @AllArgsConstructor
+@Slf4j
 public class AdminApi {
 
 	@Autowired
@@ -42,14 +43,10 @@ public class AdminApi {
 
 	// [ listUser]
 	@GetMapping("/listUser")
-	public ResponseEntity<Page<UsernamesModels>> listAllUsers() {
-		return ResponseEntity.ok().body(userController.listUserByPage(0, 0, ""));
-	}
-
-	// [ searchUserByNameOrEmail ]
-	@GetMapping("/listUser/{searchcontent}")
-	public ResponseEntity<Page<UsernamesModels>> searchUserByNameOrEmail(@PathVariable String searchcontent) {
-		return ResponseEntity.ok().body(userController.listUserByPage(0, 0, ""));
+	public ResponseEntity<Page<UsernamesModels>> listAllUsers(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "200") int size,
+			@RequestParam(defaultValue = "", required = false) String searchContent) {
+		return ResponseEntity.ok().body(userController.listUserByPage(page, size, searchContent));
 	}
 
 	// [ searchByTelephoneNumber ]
@@ -66,11 +63,12 @@ public class AdminApi {
 	}
 
 	// [ editUser ]
-	/*@PostMapping("/editUser")
-	public ResponseEntity<ActionResponseModel> editUser(@RequestPart UserNameModelEdit newInformation,
-			HttpServletRequest request) {
-		return ResponseEntity.ok().body(userController.editUser(newInformation, request));
-	}*/
+	/*
+	 * @PostMapping("/editUser") public ResponseEntity<ActionResponseModel>
+	 * editUser(@RequestPart UserNameModelEdit newInformation, HttpServletRequest
+	 * request) { return
+	 * ResponseEntity.ok().body(userController.editUser(newInformation, request)); }
+	 */
 
 	// [ changePassword ]
 

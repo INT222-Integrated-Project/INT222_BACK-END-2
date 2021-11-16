@@ -1,6 +1,7 @@
 package swst.application.api;
 
 import java.net.URI;
+import java.net.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,26 +18,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
 import swst.application.authenSecurity.TokenUtills;
 import swst.application.controllers.ProductOrderController;
 import swst.application.controllers.ProductsController;
+import swst.application.entities.Orders;
 import swst.application.entities.Products;
+import swst.application.entities.ProductsColor;
 import swst.application.models.ActionResponseModel;
-import swst.application.repositories.ProductsRepository;
-import swst.application.repositories.UsernameRepository;
 
 @RequestMapping("/staff")
 @RestController
 @RequiredArgsConstructor
 public class StaffApi {
 
-	@Autowired
-	private final ProductsRepository productsRepository;
-	@Autowired
-	private final UsernameRepository usernameRepository;
 	@Autowired
 	private final ProductsController productsController;
 	@Autowired
@@ -49,16 +47,17 @@ public class StaffApi {
 		return ResponseEntity.ok().body(productsController.listProductByUserId(page, size, request));
 	}
 
-	// [ createNewproduct ]
+	// !!! [ createNewproduct ]
 	@PostMapping(value = "/products/add", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Products> createNewproduct(@RequestBody Products products, HttpServletRequest request) {
+	public ResponseEntity<Products> createNewproduct(@RequestPart Products products,
+			@RequestPart MultipartFile imageFile, HttpServletRequest request) {
 		productsController.createNewproductTextOnly(TokenUtills.getUserNameFromToken(request), products);
 		URI uri = URI
 				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/product/add").toString());
 		return ResponseEntity.created(uri).body(products);
 	}
 
-	// [ editExistingProduct ]
+	// !!! [ editExistingProduct ]
 	@PutMapping(value = "/product/edit", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> editExistingProduct(@RequestBody Products incomingproduct, HttpServletRequest request) {
 		URI uri = URI
@@ -67,20 +66,36 @@ public class StaffApi {
 	}
 
 	// [ toggleOnStore ]
-	@PostMapping("/product/onstore/{id}")
+	@PutMapping("/product/onstore/{id}")
 	public ResponseEntity<ActionResponseModel> toggleOnStore(@PathVariable(name = "id") int productId,
 			HttpServletRequest request) {
 		ActionResponseModel action = productsController.toggleProduct(productId, request);
-		return ResponseEntity.ok().body(action);
+		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
+				.path("/staff/product/onstore/" + productId).toString());
+		return ResponseEntity.created(uri).body(action);
 	}
 
 	// [ changeOrderStatus ]
-	@PostMapping("/changestatus/{orderId}/{statusid}")
+	@PutMapping("/changestatus/{orderId}/{statusID}")
 	public ResponseEntity<ActionResponseModel> changeOrderStatus(@PathVariable long orderId,
-			@PathVariable int statusid) {
+			@PathVariable int statusID) {
 		URI uri = URI.create(
-				ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/cancleorder/" + orderId).toString());
-		return ResponseEntity.created(uri).body(productOrderController.changeOrderStatusByStaff(orderId, statusid));
+				ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/changestatus/" + orderId).toString());
+		return ResponseEntity.created(uri).body(productOrderController.changeOrderStatusByStaff(orderId, statusID));
 	}
 
+	// !!! [ getProductOrders ]
+	@GetMapping("/orders/{productID}")
+	public Page<Orders> getProductOrders(@PathVariable int productID, HttpRequest request) {
+		return null;
+	}
+
+	// [ changeStock ]
+	@PutMapping("/addStock")
+	public ResponseEntity<ProductsColor> changeStock(@RequestParam long productColorId, @RequestParam int quantity,
+			HttpServletRequest request) {
+		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
+				.path("/staff/addStock/" + productColorId).toString());
+		return ResponseEntity.created(uri).body(productsController.addOrRemoveStock(quantity, productColorId, request));
+	}
 }

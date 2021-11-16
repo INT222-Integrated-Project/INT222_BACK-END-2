@@ -1,37 +1,16 @@
 package swst.application.controllers;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-import javax.management.relation.RoleResult;
 import javax.servlet.http.HttpServletRequest;
 
-import org.codehaus.groovy.syntax.TokenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.interfaces.DecodedJWT;
 
 import lombok.extern.slf4j.Slf4j;
 import swst.application.authenSecurity.TokenUtills;
@@ -39,7 +18,6 @@ import swst.application.entities.Products;
 import swst.application.entities.ProductsColor;
 import swst.application.entities.Roles;
 import swst.application.entities.UsernamesModels;
-import swst.application.errorsHandlers.ExceptionresponsesModel;
 import swst.application.errorsHandlers.ExceptionFoundation;
 import swst.application.errorsHandlers.ExceptionresponsesModel.EXCEPTION_CODES;
 import swst.application.models.ActionResponseModel;
@@ -129,6 +107,31 @@ public class ProductsController {
 		return new ActionResponseModel(actionTitle, true);
 	}
 
+	// [ addOrRemoveStock ]
+	public ProductsColor addOrRemoveStock(int quantity, long productId, HttpServletRequest request) {
+
+		ProductsColor currentProduct = productsColorRepository.findById(productId)
+				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+						"[ NOT FOUND ] THis product ID never exist."));
+
+		String ownerName = usernameRepository
+				.findById(productsRepository.findById(currentProduct.getCaseID())
+						.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+								"[ NOT FOUND ] THis product ID never exist."))
+						.getUsernameID())
+				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+						"[ NOT FOUND ] THis product ID never exist."))
+				.getUserName();
+		if (!TokenUtills.getUserNameFromToken(request).equalsIgnoreCase(ownerName)) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_NOT_ALLOWED,
+					"[ NOT ALLOWED ] You are not the owner of this product.");
+		}
+
+		currentProduct.setQuantity(currentProduct.getQuantity() + quantity);
+		productsColorRepository.save(currentProduct);
+		return currentProduct;
+	}
+
 	// [ toggleProduct ]
 	public ActionResponseModel toggleProduct(int productId, HttpServletRequest request) {
 		UsernamesModels owner = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
@@ -175,7 +178,8 @@ public class ProductsController {
 		result = productsRepository.findByUsernameID(owner.getUserNameID(), sendPageRequest);
 
 		if (result.getTotalPages() < page + 1) {
-			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Seems like you don't have any items here, try to add some?");
+			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+					"[ NOT FOUND ] Seems like you don't have any items here, try to add some?");
 		}
 		return result;
 	}

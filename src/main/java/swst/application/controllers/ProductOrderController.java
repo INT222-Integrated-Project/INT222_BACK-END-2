@@ -31,7 +31,7 @@ import swst.application.repositories.OrdersRepository;
 import swst.application.repositories.ProductsColorRepository;
 import swst.application.repositories.ProductsRepository;
 import swst.application.repositories.UsernameRepository;
-	
+
 @Service
 @PropertySource("userdefined.properties")
 @Slf4j
@@ -75,9 +75,8 @@ public class ProductOrderController {
 
 		return result;
 	}
-	
+
 	// [ ListOrderByProductId ]
-	
 
 	// [ addOrder ]
 	public ActionResponseModel addOrder(HttpServletRequest request, Orders orders) {
@@ -158,30 +157,29 @@ public class ProductOrderController {
 		return addOrder;
 	}
 
-	// [ Change Order Status ]
-	public ActionResponseModel changeOrderStatus(int statusId, long orderId, HttpServletRequest request) {
+	// [ cancelOrcder ]
+	public ActionResponseModel cancelOrcder(long orderId, HttpServletRequest request) {
+
 		UsernamesModels currentUserName = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
 
-		OrderStatus status = orderStatusRepository.findById(statusId)
+		Orders currentOrder = ordersRepository.findById(orderId)
 				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
-						"[ NOT FOUND ] This status with this ID is nit exist."));
+						"[ NOT FOUND ] Order with this ID is not exist."));
 
-		Orders currentorder = ordersRepository.findById(orderId)
-				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
-						"[ NOT FOUND ] Order with this ID is nit exist."));
-
-		if (currentorder.getUserNameID() != currentUserName.getUserNameID()) {
+		if (currentOrder.getUserNameID() != currentUserName.getUserNameID()) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_NOT_THE_OWNER,
 					"[ NOT ALLOWED ] This order is not belong to you.");
 		}
-		if (currentorder.getOrderStatus() != orderStatusRepository.findById(1).get()) {
+		if (currentOrder.getOrderStatus().getStatusID() != 1) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ALLOW_TO_CANCLE,
 					"[ PAID ] You paid for this product or is not in a status that you will be able to cancle.");
 		}
-
-		currentorder.setOrderStatus(status);
-		ordersRepository.save(currentorder);
-		return new ActionResponseModel("Change status to " + status.getStatus(), true);
+		returnStockFromCancledOrder(currentOrder.getOrderDetails());
+		currentOrder.setOrderStatus(orderStatusRepository.findById(5)
+				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+						"[ NOT FOUND ] This status with this ID is not exist.")));
+		ordersRepository.save(currentOrder);
+		return new ActionResponseModel("Cencelled", true);
 	}
 
 	// [ changeOrderStatusByStaff]
@@ -192,10 +190,33 @@ public class ProductOrderController {
 		OrderStatus status = orderStatusRepository.findById(statusId)
 				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 						"[ NOT FOUND ] This status with this ID is not exist."));
+		if (currentOrder.getOrderStatus().getStatusID() == 4) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ALLOW_TO_CHANGE_STATUS,
+					"[ NOT ALLOWED ] Can't give status to a completed orders.");
+		}
+		if (currentOrder.getOrderStatus().getStatusID() == 5) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ALLOW_TO_CANCLE,
+					"[ CANCLED ] Can't give status to a cancelled orders.");
+		}
+		if (statusId == 5) {
+			List<OrderDetail> cancellationList = currentOrder.getOrderDetails();
+			returnStockFromCancledOrder(cancellationList);
+		}
 
 		currentOrder.setOrderStatus(status);
 		ordersRepository.save(currentOrder);
-		return new ActionResponseModel("Change status for order " + currentOrder.getOrderID() + " to " + status.getStatus(), true);
+		return new ActionResponseModel(
+				"Change status for order " + currentOrder.getOrderID() + " to " + status.getStatus(), true);
+	}
+
+	// [ returnStockFromCancledOrder ]
+	private void returnStockFromCancledOrder(List<OrderDetail> cancellationList) {
+		for (int i = 0; i < cancellationList.size(); i++) {
+			Optional<ProductsColor> currentProduct = productsColorRepository
+					.findById(cancellationList.get(i).getProductcolorID());
+			currentProduct.get()
+					.setQuantity(cancellationList.get(i).getQuantityOrder() + currentProduct.get().getQuantity());
+		}
 	}
 
 	// [Delete order]
@@ -204,8 +225,3 @@ public class ProductOrderController {
 	}
 
 }
-
-/*
- * Status List [ 1 ] To Pay [ 2 ] To Ship [ 3 ] To Receive [ 4 ] Completed [ 5 ]
- * Cancelled
- */

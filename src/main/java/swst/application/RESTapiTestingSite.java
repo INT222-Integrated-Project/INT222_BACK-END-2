@@ -1,8 +1,11 @@
 package swst.application;
 
+import java.io.InputStream;
+import java.sql.Blob;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,9 +15,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import swst.application.controllers.UserController;
 import swst.application.entities.Brands;
 import swst.application.entities.Colors;
 import swst.application.entities.Models;
@@ -36,6 +43,7 @@ import swst.application.repositories.OrderDetailRepository;
 import swst.application.repositories.OrdersRepository;
 import swst.application.repositories.ProductModelRepository;
 import swst.application.repositories.UsernameRepository;
+import swst.application.services.FileStorageService;
 import swst.application.repositories.ProductsColorRepository;
 import swst.application.repositories.ProductsRepository;
 import swst.application.repositories.RolesRepository;
@@ -72,16 +80,29 @@ public class RESTapiTestingSite {
 	private OrderDetailRepository orderDetailRepository;
 	@Autowired
 	private OrderStatusRepository statusRepository;
+	@Autowired
+	private UserController ussrcontroller;
 
-	/*
-	 * FindAll
-	 */
+	@Autowired
+	private FileStorageService fileStorageService;
+
+	// @GetMapping("/image/{imagename}")
+
+	@PostMapping("/upload")
+	public ActionResponseModel addimage(@RequestPart("image") MultipartFile file) {
+		if (file == null) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.DEAD, "LOL!");
+		}
+
+		fileStorageService.saveProductImage(file, "products");
+		return new ActionResponseModel("Uploaded", true);
+	}
 
 	@PostMapping("/post/orderdetail/{orderId}")
 	public ActionResponseModel addOrderDetail(@RequestPart OrderDetail orderDetail, @PathVariable long orderId) {
 		Optional<Orders> serchOrder = ordersRepository.findById(orderId);
 		orderDetail.setOrders(serchOrder.get());
-		
+
 		orderDetailRepository.save(orderDetail);
 		return new ActionResponseModel("Post orderdetail", true);
 	}
@@ -136,8 +157,9 @@ public class RESTapiTestingSite {
 	}
 
 	@RequestMapping("/username")
-	public List<UsernamesModels> finrAllUserName() {
-		return usernameRepository.findAll();
+	public Page<UsernamesModels> finrAllUserName(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "45") int size, @RequestParam(defaultValue = "") String searchname) {
+		return ussrcontroller.listUserByPage(page, size, searchname);
 	}
 
 	// RC_OrderModels

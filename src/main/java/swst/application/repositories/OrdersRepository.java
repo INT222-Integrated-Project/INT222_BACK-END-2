@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import swst.application.entities.OrderDetail;
 import swst.application.entities.Orders;
 
 public interface OrdersRepository extends JpaRepository<Orders, Long> {
@@ -15,4 +16,6 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
 	@Query(value = "SELECT o FROM Orders o WHERE o.userNameID = ?1 ORDER BY orderID DESC")
 	Page<Orders> findByUserNameID(int userNameID, Pageable pageable);
 	
+	@Query(value = "SELECT o FROM Orders o WHERE o.orderDetails = ?1 ORDER BY orderID DESC")
+	Page<Orders> findByOrderDetails(OrderDetail orderDetail,Pageable pageable);
 }

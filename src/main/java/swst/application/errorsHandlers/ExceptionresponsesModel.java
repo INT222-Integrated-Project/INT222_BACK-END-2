@@ -44,6 +44,7 @@ public class ExceptionresponsesModel {
 		SHOP_NOT_ON_STORE(6001), // Sorry! they don't want to sell this product!
 		SHOP_NOT_ENOUGH_GOODS_FOR_SELL(6002), // Have 3 but order 4.
 		SHOP_NOT_ALLOW_TO_CANCLE(6003), // You paid for your product but want to cancle.
+		SHOP_NOT_ALLOW_TO_CHANGE_STATUS(6004), // You paid for your product but want to cancle.
 		
 		// Others
 		DEAD(9999); // Just stupidly died with an unknown reason.

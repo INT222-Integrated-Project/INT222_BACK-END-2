@@ -21,13 +21,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import lombok.RequiredArgsConstructor;
 import swst.application.controllers.ModelController;
 import swst.application.controllers.ProductsController;
-import swst.application.controllers.PublicUserController;
+import swst.application.controllers.UserController;
 import swst.application.entities.Brands;
 import swst.application.entities.Colors;
 import swst.application.entities.Models;
 import swst.application.entities.Products;
 import swst.application.entities.ProductsColor;
-import swst.application.models.ActionResponseModel;
 import swst.application.models.CreateNewUserModel;
 import swst.application.models.LoginModel;
 import swst.application.repositories.BrandsRepository;
@@ -39,7 +38,7 @@ import swst.application.repositories.ProductsColorRepository;
 @RequiredArgsConstructor
 public class PublicVisitorApi {
 	@Autowired
-	private final PublicUserController publicUserController;
+	private final UserController userController;
 	@Autowired
 	private final ProductsController productsRESTcontroller;
 	@Autowired
@@ -51,26 +50,10 @@ public class PublicVisitorApi {
 	@Autowired
 	private final ProductsColorRepository productsColorRepository;
 
-	// [ createNewUser ] Will create new user.
-	@PostMapping("/auth/register")
-	public ResponseEntity<HttpStatus> createNewUser(@RequestPart CreateNewUserModel newUser) {
-		publicUserController.register(newUser);
-		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/public/auth/register").toString());
-		return ResponseEntity.created(uri).body(HttpStatus.CREATED);
-	}
-
-	// [ userLogin ] Give the user login and token.
-	@PostMapping("/auth/login")
-	public ResponseEntity<?> userLogin(@RequestBody LoginModel userLogin, HttpServletResponse response) {
-		return ResponseEntity.ok().body(publicUserController.authenUser(userLogin, response));
-	}
-
 	// [ listProductWithPage ] Will list product with page, optional with name.
 	@GetMapping("/products")
-	public Page<Products> listProductWithPage(
-			@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "9") int size, 
-			@RequestParam(defaultValue = "") String searchname) {
+	public Page<Products> listProductWithPage(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "9") int size, @RequestParam(defaultValue = "") String searchname) {
 		return productsRESTcontroller.listProductOnStore(page, size, searchname);
 	}
 
@@ -81,22 +64,36 @@ public class PublicVisitorApi {
 		return modelController.listModelsByPage(page, size, searchname);
 	}
 
-	// [ listAllColors ] List all colors available in the repository.
+	// [ listAllColors ]
 	@GetMapping("/colors")
 	public List<Colors> listAllColors() {
 		return colorsRepository.findAll();
 	}
 
-	// [ listAllBrands ] List all brands available in the repository.
+	// [ listAllBrands ]
 	@GetMapping("/brands")
 	public List<Brands> listAllBrands() {
 		return brandRepository.findAll();
 	}
 
-	// [ listProductColors ] List all product color that belongs to specific product
-	// ID.
-	@GetMapping("/productcolor/{id}")
-	public ResponseEntity<List<ProductsColor>> listProductColors(@PathVariable(name = "id") int caseID) {
+	// [ listProductColors ]
+	@GetMapping("/productcolor/{caseID}")
+	public ResponseEntity<List<ProductsColor>> listProductColors(@PathVariable int caseID) {
 		return ResponseEntity.ok().body(productsColorRepository.findAllBycaseID(caseID));
+	}
+
+	// [ createNewUser ] Will create new user.
+	@PostMapping("/auth/register")
+	public ResponseEntity<HttpStatus> createNewUser(@RequestPart CreateNewUserModel newUser) {
+		userController.register(newUser);
+		URI uri = URI
+				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/public/auth/register").toString());
+		return ResponseEntity.created(uri).body(HttpStatus.CREATED);
+	}
+
+	// [ userLogin ] Give the user login and token.
+	@PostMapping("/auth/login")
+	public ResponseEntity<?> userLogin(@RequestBody LoginModel userLogin, HttpServletResponse response) {
+		return ResponseEntity.ok().body(userController.authenUser(userLogin, response));
 	}
 }

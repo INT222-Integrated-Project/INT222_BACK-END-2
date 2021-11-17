@@ -47,22 +47,27 @@ public class StaffApi {
 		return ResponseEntity.ok().body(productsController.listProductByUserId(page, size, request));
 	}
 
-	// !!! [ createNewproduct ]
-	@PostMapping(value = "/products/add", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Products> createNewproduct(@RequestPart Products products,
-			@RequestPart MultipartFile imageFile, HttpServletRequest request) {
-		productsController.createNewproductTextOnly(TokenUtills.getUserNameFromToken(request), products);
+	// [ createNewproduct ]
+	@PostMapping(value = "/products", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.IMAGE_JPEG_VALUE,
+			MediaType.IMAGE_JPEG_VALUE })
+	public ResponseEntity<Products> createNewproduct(@RequestPart Products newProducts,
+			@RequestPart(required = false) MultipartFile imageFile, HttpServletRequest request) {
+		productsController.createNewproduct(newProducts, imageFile, request);
+
 		URI uri = URI
 				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/product/add").toString());
-		return ResponseEntity.created(uri).body(products);
+		return ResponseEntity.created(uri).body(newProducts);
 	}
 
-	// !!! [ editExistingProduct ]
-	@PutMapping(value = "/product/edit", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> editExistingProduct(@RequestBody Products incomingproduct, HttpServletRequest request) {
-		URI uri = URI
-				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/product/add").toString());
-		return ResponseEntity.created(uri).body(incomingproduct);
+	// [ editExistingProduct ]
+	@PutMapping(value = "/product/{productId}", produces = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_JPEG_VALUE })
+	public ResponseEntity<ActionResponseModel> editExistingProduct(@RequestPart Products incomingproduct,
+			@RequestPart(required = false) MultipartFile imageFile, @PathVariable int productId,
+			HttpServletRequest request) {
+		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/product").toString());
+		return ResponseEntity.created(uri)
+				.body(productsController.editExistingProduct(incomingproduct, imageFile, productId, request));
 	}
 
 	// [ toggleOnStore ]
@@ -84,10 +89,11 @@ public class StaffApi {
 		return ResponseEntity.created(uri).body(productOrderController.changeOrderStatusByStaff(orderId, statusID));
 	}
 
-	// !!! [ getProductOrders ]
-	@GetMapping("/orders/{productID}")
-	public Page<Orders> getProductOrders(@PathVariable int productID, HttpRequest request) {
-		return null;
+	// !!! [ setPrice ]
+	@PutMapping("/setprice/{productID}")
+	public ResponseEntity<ActionResponseModel> setPrice(@PathVariable int productID) {
+		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/setprice").toString());
+		return ResponseEntity.created(uri).body(null);
 	}
 
 	// [ changeStock ]

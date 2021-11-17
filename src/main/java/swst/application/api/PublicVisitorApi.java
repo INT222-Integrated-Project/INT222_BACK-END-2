@@ -5,8 +5,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +27,7 @@ import swst.application.controllers.UserController;
 import swst.application.entities.Brands;
 import swst.application.entities.Colors;
 import swst.application.entities.Models;
+import swst.application.entities.ProductModel;
 import swst.application.entities.Products;
 import swst.application.entities.ProductsColor;
 import swst.application.models.CreateNewUserModel;
@@ -40,7 +43,7 @@ public class PublicVisitorApi {
 	@Autowired
 	private final UserController userController;
 	@Autowired
-	private final ProductsController productsRESTcontroller;
+	private final ProductsController productsController;
 	@Autowired
 	private final ColorsRepository colorsRepository;
 	@Autowired
@@ -54,7 +57,13 @@ public class PublicVisitorApi {
 	@GetMapping("/products")
 	public Page<Products> listProductWithPage(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "9") int size, @RequestParam(defaultValue = "") String searchname) {
-		return productsRESTcontroller.listProductOnStore(page, size, searchname);
+		return productsController.listProductOnStore(page, size, searchname);
+	}
+
+	// [ getProductById ]
+	@GetMapping("/products/{productID}")
+	public ResponseEntity<Products> getProductById(@PathVariable int productID) {
+		return ResponseEntity.ok().body(productsController.findProductById(productID));
 	}
 
 	// [ listModelWithpage ] List all models in the database with page.
@@ -62,6 +71,12 @@ public class PublicVisitorApi {
 	public Page<Models> listModelWithpage(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "30") int size, @RequestParam(defaultValue = "") String searchname) {
 		return modelController.listModelsByPage(page, size, searchname);
+	}
+
+	// [ getProductImage ]
+	@GetMapping(value = "/prodImg/{productId}", produces = { MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
+	public ResponseEntity<Resource> getProductImage(@PathVariable int productId) {
+		return ResponseEntity.ok().body(productsController.getProductImage(productId));
 	}
 
 	// [ listAllColors ]

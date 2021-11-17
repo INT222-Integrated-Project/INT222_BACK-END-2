@@ -62,11 +62,7 @@ public class FileStorageService {
 	}
 
 	public String saveProductImage(MultipartFile imageFile, String folder) {
-		/*if (!(imageFile.getContentType().toString() == "image/png"
-				|| imageFile.getContentType().toString() == "image/jpg")) {
-			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_IMAGE_FAILED,
-					"[ FAILED ] Unacceptable format. your file is : " + imageFile.getContentType().toString());
-		}*/
+
 		if (imageFile.getSize() > 8000000) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_IMAGE_FAILED, "[ FAILED ] Image can't be more than 8MB");
 		}
@@ -83,7 +79,7 @@ public class FileStorageService {
 			buffer.append((char) ramdomLimitedInt);
 		}
 
-		String imageName = LocalDate.now() + buffer.toString() + imageFile.getOriginalFilename();
+		String imageName = LocalDate.now() + buffer.toString() + imageFile.getOriginalFilename().substring(imageFile.getOriginalFilename().length() - 4);
 
 		try {
 			Files.copy(imageFile.getInputStream(), Paths.get(mainFolder + folder).resolve(imageName),
@@ -97,17 +93,20 @@ public class FileStorageService {
 
 	public void deleteImage(String fileName, String folder) {
 		try {
-			Files.delete(Paths.get(mainFolder + folder).resolve(folder));
+			Files.delete(Paths.get(mainFolder + folder).resolve(fileName));
 			log.info("[ DELETED ] " + fileName);
 		} catch (Exception exc) {
-			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_DELETE_FAILED,
-					"[ FAILED ] Can't delete this image because : " + exc.getMessage());
+			log.info("[ Not found but nothing to worry. ] " + fileName);
 		}
 	}
 
 	public Resource loadImage(String fileName, String folder) {
 		try {
-			Resource target = new UrlResource(Paths.get(mainFolder + folder).toUri());
+			Path directory = Paths.get(mainFolder + folder);
+			Path file = directory.resolve(fileName);
+			Resource target = new UrlResource(file.toUri());
+			log.info(folder + " | " + fileName + " | " + target);
+			 
 			if (target.exists() && target.isReadable()) {
 				return target;
 			} else {

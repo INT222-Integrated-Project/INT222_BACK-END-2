@@ -102,7 +102,7 @@ public class UserController {
 		return loginResponse;
 	}
 
-	// [ listUser ]
+	// [ listUserByPage ]
 	public Page<UsernamesModels> listUserByPage(int page, int size, String searchContent) {
 		if (page < 0) {
 			page = 0;
@@ -120,16 +120,27 @@ public class UserController {
 		return result;
 	}
 
+	// [ listUserByPhone ]
+	public Page<UsernamesModels> listUserByPhone(String phoneNumber) {
+		Pageable sendPageRequest = PageRequest.of(0, 20);
+		return usernameRepository.findByPhoneNumber(phoneNumber, sendPageRequest);
+	}
+
 	// [ assignRole ]
-	public GetUserModel assignRole(GetUserModel getUser) {
-		UsernamesModels assignTo = usernameRepository.findByUserName(getUser.getUserName());
+	public ActionResponseModel assignRole(int userNameID, int roleID) {
+		UsernamesModels assignTo = usernameRepository.findById(userNameID)
+				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+						"[ NOT EXIST] This user is not exist in our database."));
 		if (assignTo == null) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 					"[ NOT EXIST] This user is not exist in our database.");
 		}
-		assignTo.setRole(rolesRepository.findByroleName(getUser.getUserRole()));
+		assignTo.setRole(rolesRepository.findById(roleID)
+				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+						"[ NOT EXIST] This user is not exist in our database.")));
 		usernameRepository.save(assignTo);
-		return getUser;
+		return new ActionResponseModel("[ ROLE CHANGED ] change role for " + assignTo.getUserName() + " to "
+				+ assignTo.getRole().getRoleName(), true);
 	}
 
 	// [ editUser ]

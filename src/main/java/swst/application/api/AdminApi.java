@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,25 +52,16 @@ public class AdminApi {
 
 	// [ searchByTelephoneNumber ]
 	@GetMapping("/listUser/searchByPhone/{phoneNumber}")
-	public ResponseEntity<List<UsernamesModels>> searchByTelephoneNumber(@RequestParam String phoneNumber) {
-		return ResponseEntity.ok().body(usernameRepository.findByPhoneNumber(phoneNumber));
+	public ResponseEntity<Page<UsernamesModels>> searchByTelephoneNumber(@PathVariable String phoneNumber) {
+		return ResponseEntity.ok().body(userController.listUserByPhone(phoneNumber));
 	}
 
 	// [ assignRoleToUser ]
-	@PostMapping("/assignRole")
-	public ResponseEntity<GetUserModel> assignRoleToUser(@RequestBody GetUserModel getUser) {
-		userController.assignRole(getUser);
-		return ResponseEntity.ok().body(getUser);
+	@PutMapping("/assignRole")
+	public ResponseEntity<ActionResponseModel> assignRoleToUser(@RequestParam int userNameID,
+			@RequestParam int roleID) {
+		return ResponseEntity.ok().body(userController.assignRole(userNameID, roleID));
 	}
 
-	// [ editUser ]
-	/*
-	 * @PostMapping("/editUser") public ResponseEntity<ActionResponseModel>
-	 * editUser(@RequestPart UserNameModelEdit newInformation, HttpServletRequest
-	 * request) { return
-	 * ResponseEntity.ok().body(userController.editUser(newInformation, request)); }
-	 */
-
-	// [ changePassword ]
 
 }

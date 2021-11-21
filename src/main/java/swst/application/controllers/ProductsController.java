@@ -88,53 +88,70 @@ public class ProductsController {
 	// [ createNewproduct ]
 	public Products createNewproduct(Products incoming, MultipartFile imageFile, HttpServletRequest request) {
 
+		Products newProduct = new Products();
+
 		if (incoming.getCaseID() != 0) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_OBJECT_EXISTED,
 					"[ EXISTED ] Better to edit it instead of create a new one.");
 		}
-
-		incoming.setUsernameID(
+		newProduct.setProductImage("404notfound.png");
+		newProduct.setCaseName(incoming.getCaseName());
+		newProduct.setCasePrice(incoming.getCasePrice());
+		newProduct.setModels(incoming.getModels());
+		newProduct.setCaseDate(LocalDate.now().toString());
+		newProduct.setIsOnStore(true);
+		newProduct.setUsernameID(
 				usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)).getUserNameID());
 		if (incoming.getCaseDescription() == "") {
-			incoming.setCaseDescription("A case added by " + incoming.getUsernameID());
+			newProduct.setCaseDescription("A case added by " + newProduct.getUsernameID());
+		} else {
+			newProduct.setCaseDescription(incoming.getCaseDescription());
 		}
-
-		incoming.setCaseDate(LocalDate.now().toString());
-		incoming.setIsOnStore(true);
-		// productsRepository.save(incoming);
 
 		if (imageFile != null) {
-			incoming.setProductImage(fileStorageService.saveProductImage(imageFile, "products"));
+			newProduct.setProductImage(fileStorageService.saveProductImage(imageFile, "products"));
 		}
-		productsRepository.save(incoming);
-		return incoming;
 
+		newProduct = productsRepository.save(newProduct);
+		loopSaveProductColor(incoming.getProductColor(), newProduct);
+
+		return newProduct;
+
+	}
+
+	// [ listProductColorsByProduct ]
+	public List<ProductsColor> listProductColorsByProduct(int caseId) {
+		Products searchBy = productsRepository.findById(caseId)
+				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+						"[ NOT FOUNG ] This product with this ID is not exist."));
+		return productsColorRepository.findAllByProduct(searchBy);
 	}
 
 	// [ editExistingProduct ]
 	public ActionResponseModel editExistingProduct(Products incoming, MultipartFile file, int productId,
 			HttpServletRequest request) {
-		//log.info("Entered OK : ID :" + productId);
+		// log.info("Entered OK : ID :" + productId);
 		Products editProduct = productsRepository.findById(productId)
 				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 						"[ NOT FOUND ] This product ID never exist."));
 
 		UsernamesModels owner = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
 
-		//log.info("Found OK :" + editProduct.getUsernameID() + " : " + owner.getUserNameID());
+		// log.info("Found OK :" + editProduct.getUsernameID() + " : " +
+		// owner.getUserNameID());
 		if (editProduct.getUsernameID() != owner.getUserNameID()) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_NOT_THE_OWNER,
 					"[ NOT PERMITTED ] You are not the owner of this product.");
 		}
-		//log.info("Owner OK");
+		// log.info("Owner OK");
 		editProduct.setCaseName((incoming.getCaseName() == "" ? editProduct.getCaseName() : incoming.getCaseName()));
 		editProduct.setCaseDescription((incoming.getCaseDescription() == "" ? editProduct.getCaseDescription()
 				: incoming.getCaseDescription()));
 		editProduct.setModels((incoming.getModels() == null ? editProduct.getModels() : incoming.getModels()));
 		editProduct.setCasePrice((incoming.getCasePrice() == 0 ? editProduct.getCasePrice() : incoming.getCasePrice()));
-		//log.info("assign OK");
+		// log.info("assign OK");
 		productsRepository.save(editProduct);
-		//log.info("save OK");
+		// log.info("save OK");
 		if (file != null) {
 			fileStorageService.deleteImage(editProduct.getProductImage(), "products");
 			editProduct.setProductImage(fileStorageService.saveProductImage(file, "products"));
@@ -152,7 +169,7 @@ public class ProductsController {
 						"[ NOT FOUND ] THis product ID never exist."));
 
 		String ownerName = usernameRepository
-				.findById(productsRepository.findById(currentProduct.getCaseID())
+				.findById(productsRepository.findById(currentProduct.getProduct().getCaseID())
 						.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 								"[ NOT FOUND ] THis product ID never exist."))
 						.getUsernameID())
@@ -194,11 +211,6 @@ public class ProductsController {
 
 	}
 
-	// [ listProductColors ]
-	public List<ProductsColor> listProductColors(int productId) {
-		return productsColorRepository.findAllBycaseID(productId);
-	}
-
 	// [ listProductByUserId ]
 	public Page<Products> listProductByUserId(int page, int size, HttpServletRequest request) {
 		UsernamesModels owner = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
@@ -219,6 +231,23 @@ public class ProductsController {
 					"[ NOT FOUND ] Seems like you don't have any items here, try to add some?");
 		}
 		return result;
+	}
+
+	// [ loopSaveProductColor ]
+	private List<ProductsColor> loopSaveProductColor(List<ProductsColor> incomingNewProduct, Products newProduct) {
+
+		for (int i = 0; i < incomingNewProduct.size(); i++) {
+			// log.info("" + newProduct.getCaseID());
+			ProductsColor currentColor = new ProductsColor();
+			currentColor.setColor(incomingNewProduct.get(i).getColor());
+			currentColor.setImageCase(null);
+			currentColor.setProduct(newProduct);
+			currentColor.setQuantity(incomingNewProduct.get(i).getQuantity());
+			// log.info("Save : " + currentColor.getProductcolorID());
+			productsColorRepository.save(currentColor);
+			// log.info("FINE : " + currentColor.getProductcolorID());
+		}
+		return null;
 	}
 
 }

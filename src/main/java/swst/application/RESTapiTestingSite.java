@@ -1,6 +1,7 @@
 package swst.application;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.sql.Blob;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import swst.application.controllers.UserController;
 import swst.application.entities.Brands;
@@ -85,6 +88,20 @@ public class RESTapiTestingSite {
 
 	@Autowired
 	private FileStorageService fileStorageService;
+
+	@PostMapping("/pc")
+	public ResponseEntity<ProductsColor> productPost() {
+		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/test/pc").toString());
+		ProductsColor newColor = new ProductsColor();
+		newColor.setProduct(productsRepository.findById(1).get());
+		newColor.setColor(colorsRepository.findById(1).get());
+		
+		newColor.setQuantity(998);
+		newColor.setImageCase(null);
+
+		newColor = productsColorRepository.save(newColor);
+		return ResponseEntity.created(uri).body(newColor);
+	}
 
 	// @GetMapping("/image/{imagename}")
 

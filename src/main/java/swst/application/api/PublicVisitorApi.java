@@ -35,6 +35,7 @@ import swst.application.models.LoginModel;
 import swst.application.repositories.BrandsRepository;
 import swst.application.repositories.ColorsRepository;
 import swst.application.repositories.ProductsColorRepository;
+import swst.application.repositories.ProductsRepository;
 
 @RestController
 @RequestMapping("/public")
@@ -94,7 +95,7 @@ public class PublicVisitorApi {
 	// [ listProductColors ]
 	@GetMapping("/productcolor/{caseID}")
 	public ResponseEntity<List<ProductsColor>> listProductColors(@PathVariable int caseID) {
-		return ResponseEntity.ok().body(productsColorRepository.findAllBycaseID(caseID));
+		return ResponseEntity.ok().body(productsController.listProductColorsByProduct(caseID));
 	}
 
 	// [ createNewUser ] Will create new user.

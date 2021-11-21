@@ -38,8 +38,6 @@ import swst.application.repositories.UsernameRepository;
 public class AdminApi {
 
 	@Autowired
-	private final UsernameRepository usernameRepository;
-	@Autowired
 	private final UserController userController;
 
 	// [ listUser]
@@ -60,8 +58,8 @@ public class AdminApi {
 	@PutMapping("/assignRole")
 	public ResponseEntity<ActionResponseModel> assignRoleToUser(@RequestParam int userNameID,
 			@RequestParam int roleID) {
-		return ResponseEntity.ok().body(userController.assignRole(userNameID, roleID));
+		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/admin/assignRole").toString());
+		return ResponseEntity.created(uri).body(userController.assignRole(userNameID, roleID));
 	}
-
 
 }

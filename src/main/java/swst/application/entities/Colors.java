@@ -23,12 +23,6 @@ public class Colors {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int codeColor;
-
 	private String caseColor;
 
-	/*
-	 * @OneToMany(mappedBy = "colors")
-	 * 
-	 * @JsonIgnore private Set<Products> products;
-	 */
 }

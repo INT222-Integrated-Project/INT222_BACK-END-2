@@ -3,6 +3,9 @@ package swst.application.entities;
 import java.util.List;
 
 import javax.persistence.*;
+
+import org.springframework.lang.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
@@ -26,8 +29,8 @@ public class Products {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private String caseDate;
 
-	@OneToMany(cascade = CascadeType.MERGE)
-	@JoinColumn(name = "caseID", referencedColumnName = "caseID")
+	@OneToMany(mappedBy = "product", orphanRemoval = true, fetch = FetchType.LAZY)
+	@Nullable
 	private List<ProductsColor> productColor;
 
 	@ManyToMany
@@ -39,12 +42,3 @@ public class Products {
 	private Boolean isOnStore;
 
 }
-
-/*
- * @ManyToMany
- * 
- * @JoinTable(name = "productscolor", joinColumns = @JoinColumn(name = "caseID",
- * referencedColumnName = "caseID"), inverseJoinColumns = @JoinColumn(name =
- * "codeColor", referencedColumnName = "codeColor")) private List<Colors>
- * colors;
- */

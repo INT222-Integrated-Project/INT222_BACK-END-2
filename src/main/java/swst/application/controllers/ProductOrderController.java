@@ -121,7 +121,7 @@ public class ProductOrderController {
 				throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ON_STORE,
 						"[ NOT ON STORE ] This item is not exist or not for sell.");
 			}
-			Optional<Products> targerProduct = productsRepository.findById(targerProductColor.get().getCaseID());
+			Optional<Products> targerProduct = productsRepository.findById(targerProductColor.get().getProduct().getCaseID());
 			if (targerProduct == null) {
 				deleteOrder(addOrder.getOrderID());
 				throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ON_STORE,

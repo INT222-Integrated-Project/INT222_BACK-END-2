@@ -18,12 +18,12 @@ public class ProductsColor {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long productcolorID;
 
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "caseID", nullable = false)
 	@JsonIgnore
-	@Basic(optional = true)
-	private int caseID;
+	private Products product;
 
 	@ManyToOne
-	@MapsId(value = "codeColor")
 	@JoinColumn(name = "codeColor", referencedColumnName = "codeColor")
 	private Colors color;
 

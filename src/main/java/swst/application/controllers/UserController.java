@@ -98,7 +98,8 @@ public class UserController {
 
 		String token = TokenUtills.createToken(requestUser.getUserName(), roles);
 		response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
-		LoginResponseModel loginResponse = new LoginResponseModel(loginUser.getUserName().toLowerCase(), token, getUserRoles);
+		LoginResponseModel loginResponse = new LoginResponseModel(loginUser.getUserName().toLowerCase(), token,
+				getUserRoles);
 		return loginResponse;
 	}
 
@@ -166,11 +167,14 @@ public class UserController {
 	}
 
 	// [ changePassword ]
-	public ActionResponseModel changePassword(String newPassword, HttpServletRequest request) {
+	public ActionResponseModel changePassword(String oldPassword, String newPassword, HttpServletRequest request) {
 		UsernamesModels currentUser = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
 		if (currentUser == null) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 					"[ NOT FOUND ] The user with this name is not exist");
+		}
+		if(!passwordEncoder.encode(oldPassword).equals(currentUser.getUserPassword())) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_BAD_CREDENTIALS, "[ BAD CREDENTIALS ] Wrond old password");
 		}
 		currentUser.setUserPassword(passwordEncoder.encode(newPassword));
 		usernameRepository.save(currentUser);

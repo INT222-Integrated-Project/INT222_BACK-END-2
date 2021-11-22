@@ -88,11 +88,11 @@ public class UsersApi {
 
 	// [ changePassword ]
 	@PutMapping("/changepassword")
-	public ResponseEntity<ActionResponseModel> changePassword(@RequestParam String newPassword,
+	public ResponseEntity<ActionResponseModel> changePassword(@RequestParam String oldPassword,@RequestParam String newPassword,
 			HttpServletRequest request) {
 		URI uri = URI
 				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/changepassword/").toString());
-		return ResponseEntity.created(uri).body(userController.changePassword(newPassword, request));
+		return ResponseEntity.created(uri).body(userController.changePassword(oldPassword, newPassword, request));
 	}
 
 	// [ deleteMyAccount ]

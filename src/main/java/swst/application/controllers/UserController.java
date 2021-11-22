@@ -98,7 +98,7 @@ public class UserController {
 
 		String token = TokenUtills.createToken(requestUser.getUserName(), roles);
 		response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
-		LoginResponseModel loginResponse = new LoginResponseModel(loginUser.getUserName().toLowerCase(), token);
+		LoginResponseModel loginResponse = new LoginResponseModel(loginUser.getUserName().toLowerCase(), token, getUserRoles);
 		return loginResponse;
 	}
 

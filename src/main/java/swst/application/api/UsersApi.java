@@ -52,7 +52,7 @@ public class UsersApi {
 	@GetMapping("/auth/logout")
 	public ResponseEntity<LoginResponseModel> userLogOut(HttpServletRequest request, HttpServletResponse response) {
 		response.setHeader(HttpHeaders.AUTHORIZATION, "");
-		return ResponseEntity.ok().body(new LoginResponseModel("User was here", ""));
+		return ResponseEntity.ok().body(new LoginResponseModel("User was here", "",null));
 	}
 
 	// [ getMyOrder ]

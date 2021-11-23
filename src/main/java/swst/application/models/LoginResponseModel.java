@@ -8,7 +8,7 @@ import swst.application.entities.Roles;
 @AllArgsConstructor
 public class LoginResponseModel {
 	private String usernames;
-	private String acceessToken;
+	private String accessToken;
 	private Roles role;
 
 }

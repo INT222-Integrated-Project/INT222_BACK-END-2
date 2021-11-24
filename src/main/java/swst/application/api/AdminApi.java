@@ -49,8 +49,8 @@ public class AdminApi {
 	}
 
 	// [ searchByTelephoneNumber ]
-	@GetMapping("/listUser/searchByPhone/{phoneNumber}")
-	public ResponseEntity<Page<UsernamesModels>> searchByTelephoneNumber(@PathVariable String phoneNumber) {
+	@GetMapping("/listUser/searchByPhone")
+	public ResponseEntity<Page<UsernamesModels>> searchByTelephoneNumber(@RequestParam(defaultValue = "") String phoneNumber) {
 		return ResponseEntity.ok().body(userController.listUserByPhone(phoneNumber));
 	}
 

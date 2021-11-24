@@ -124,7 +124,11 @@ public class UserController {
 	// [ listUserByPhone ]
 	public Page<UsernamesModels> listUserByPhone(String phoneNumber) {
 		Pageable sendPageRequest = PageRequest.of(0, 20);
-		return usernameRepository.findByPhoneNumber(phoneNumber, sendPageRequest);
+		Page<UsernamesModels> result = usernameRepository.findByPhoneNumber(phoneNumber, sendPageRequest);
+		if (result.getTotalElements() < 1) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :(");
+		}
+		return result;
 	}
 
 	// [ assignRole ]
@@ -173,8 +177,9 @@ public class UserController {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 					"[ NOT FOUND ] The user with this name is not exist");
 		}
-		if(!passwordEncoder.encode(oldPassword).equals(currentUser.getUserPassword())) {
-			throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_BAD_CREDENTIALS, "[ BAD CREDENTIALS ] Wrond old password");
+		if (!passwordEncoder.encode(oldPassword).equals(currentUser.getUserPassword())) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_BAD_CREDENTIALS,
+					"[ BAD CREDENTIALS ] Wrond old password");
 		}
 		currentUser.setUserPassword(passwordEncoder.encode(newPassword));
 		usernameRepository.save(currentUser);

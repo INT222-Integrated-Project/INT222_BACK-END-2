@@ -170,25 +170,25 @@ public class UserController {
 		String phone = (newUserInfo.getPhoneNumber() == "" ? currentUser.getPhoneNumber()
 				: newUserInfo.getPhoneNumber());
 
+		if (!currentUser.getEmail().equals(newUserInfo.getEmail())) {
+			if (usernameRepository.existsByEmailIgnoreCase(email)) {
+				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_EMAIL_ALREADY_EXIST,
+						"[ EMAIL TAKEN ] This email is taken bu another user.");
+			}
+		}
+		if (!currentUser.getPhoneNumber().equals(newUserInfo.getPhoneNumber())) {
+			if (usernameRepository.existsByPhoneNumber(phone)) {
+				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_PHONE_NUMBER_ALREADY_EXISTED,
+						"[ PHONE TAKEN ] This phone number is taken by another user.");
+			}
+		}
+
 		currentUser.setProfileImage(profileImage);
 		currentUser.setAddress(address);
 		currentUser.setFirstName(firstName);
 		currentUser.setLastName(lastName);
 		currentUser.setEmail(email);
 		currentUser.setPhoneNumber(phone);
-
-		if (newUserInfo.getEmail() != "" && !newUserInfo.getEmail().equals(currentUser.getEmail())) {
-			if (usernameRepository.existsByEmailIgnoreCase(email)) {
-				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_EMAIL_ALREADY_EXIST,
-						"[ EMAIL TAKEN ] This email is taken bu another user.");
-			}
-		}
-		if (newUserInfo.getPhoneNumber() != "" && !currentUser.getPhoneNumber().equals(newUserInfo.getPhoneNumber())) {
-			if (usernameRepository.existsByPhoneNumber(phone)) {
-				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_PHONE_NUMBER_ALREADY_EXISTED,
-						"[ PHONE TAKEN ] This phone number is taken by another user.");
-			}
-		}
 
 		currentUser = usernameRepository.save(currentUser);
 

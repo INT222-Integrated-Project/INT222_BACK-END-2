@@ -5,7 +5,6 @@ import java.net.URI;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.el.parser.AstFalse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -28,7 +27,6 @@ import swst.application.controllers.ProductOrderController;
 import swst.application.controllers.UserController;
 import swst.application.entities.Orders;
 import swst.application.entities.UsernamesModels;
-import swst.application.entities.seperated.UserNameModelEdit;
 import swst.application.models.ActionResponseModel;
 import swst.application.models.LoginResponseModel;
 import swst.application.repositories.UsernameRepository;
@@ -45,6 +43,34 @@ public class UsersApi {
 	@Autowired
 	private final ProductOrderController productOrderController;
 
+	// [ editMyprofile ]
+	@PutMapping(value = "/editMyprofile", produces = { MediaType.APPLICATION_JSON_VALUE , MediaType.IMAGE_JPEG_VALUE })
+	public ResponseEntity<UsernamesModels> editMyprofile(@RequestPart(required = true) UsernamesModels newProfileInfo,
+			@RequestPart(required = false) MultipartFile userProfileImage, HttpServletRequest request) {
+		URI uri = URI
+				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/editMyprodile").toString());
+		return ResponseEntity.created(uri).body(userController.editUser(newProfileInfo, userProfileImage, request));
+	}
+	
+	// [ uploadProfileImage ]
+	
+
+	// [ cancleUserOrder ]
+	@PutMapping("/cancleorder")
+	public ResponseEntity<ActionResponseModel> cancleOrder(@RequestParam long orderId, HttpServletRequest request) {
+		URI uri = URI.create(
+				ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/cancleorder/" + orderId).toString());
+		return ResponseEntity.created(uri).body(productOrderController.cancelOrcder(orderId, request));
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+
 	// [ getMyprofile ] Will return a profile of that user.
 	@GetMapping("/myprofile")
 	public ResponseEntity<UsernamesModels> getMyprofile(HttpServletRequest request) {
@@ -55,7 +81,7 @@ public class UsersApi {
 	@GetMapping("/auth/logout")
 	public ResponseEntity<LoginResponseModel> userLogOut(HttpServletRequest request, HttpServletResponse response) {
 		response.setHeader(HttpHeaders.AUTHORIZATION, "");
-		return ResponseEntity.ok().body(new LoginResponseModel("User was here", "",null));
+		return ResponseEntity.ok().body(new LoginResponseModel("User was here", "", null));
 	}
 
 	// [ getMyOrder ]
@@ -72,29 +98,10 @@ public class UsersApi {
 		return ResponseEntity.created(uri).body(productOrderController.addOrder(request, newOrders));
 	}
 
-	// [ editMyprofile ]
-	@PutMapping(value = "/editMyprofile", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.IMAGE_JPEG_VALUE,
-			MediaType.IMAGE_JPEG_VALUE })
-	public ResponseEntity<UsernamesModels> editMyprofile(
-			@RequestPart(required = true) UsernamesModels newProfileInfo,
-			@RequestPart(required = false) MultipartFile userProfileImage,
-			HttpServletRequest request) {
-		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/editMyprodile").toString());
-		return ResponseEntity.created(uri).body(userController.editUser(newProfileInfo,userProfileImage, request));
-	}
-
-	// [ cancleUserOrder ]
-	@PutMapping("/cancleorder/{orderId}")
-	public ResponseEntity<ActionResponseModel> cancleOrder(@PathVariable long orderId, HttpServletRequest request) {
-		URI uri = URI.create(
-				ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/cancleorder/" + orderId).toString());
-		return ResponseEntity.created(uri).body(productOrderController.cancelOrcder(orderId, request));
-	}
-
 	// [ changePassword ]
 	@PutMapping("/changepassword")
-	public ResponseEntity<ActionResponseModel> changePassword(@RequestParam String oldPassword,@RequestParam String newPassword,
-			HttpServletRequest request) {
+	public ResponseEntity<ActionResponseModel> changePassword(@RequestParam String oldPassword,
+			@RequestParam String newPassword, HttpServletRequest request) {
 		URI uri = URI
 				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/changepassword/").toString());
 		return ResponseEntity.created(uri).body(userController.changePassword(oldPassword, newPassword, request));

@@ -46,7 +46,7 @@ public class UserController {
 	private final RolesRepository rolesRepository;
 	@Autowired
 	private final FileStorageService fileStorageService;
-	
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
@@ -161,12 +161,14 @@ public class UserController {
 					"[ NOT FOUND ] The user with this name is not exist");
 		}
 
-		String profileImage = (newUserInfo.getProfileImage() == "" ? currentUser.getProfileImage() : newUserInfo.getProfileImage());
+		String profileImage = (newUserInfo.getProfileImage() == "" ? currentUser.getProfileImage()
+				: newUserInfo.getProfileImage());
 		String address = (newUserInfo.getAddress() == "" ? currentUser.getAddress() : newUserInfo.getAddress());
 		String firstName = (newUserInfo.getFirstName() == "" ? currentUser.getFirstName() : newUserInfo.getFirstName());
 		String lastName = (newUserInfo.getLastName() == "" ? currentUser.getLastName() : newUserInfo.getLastName());
 		String email = (newUserInfo.getEmail() == "" ? currentUser.getEmail() : newUserInfo.getEmail());
-		String phone = (newUserInfo.getPhoneNumber() == "" ? currentUser.getPhoneNumber() : newUserInfo.getPhoneNumber());
+		String phone = (newUserInfo.getPhoneNumber() == "" ? currentUser.getPhoneNumber()
+				: newUserInfo.getPhoneNumber());
 
 		currentUser.setProfileImage(profileImage);
 		currentUser.setAddress(address);
@@ -175,20 +177,22 @@ public class UserController {
 		currentUser.setEmail(email);
 		currentUser.setPhoneNumber(phone);
 
-		if (newUserInfo.getEmail() != "") {
+		if (newUserInfo.getEmail() != "" && !newUserInfo.getEmail().equals(currentUser.getEmail())) {
 			if (usernameRepository.existsByEmailIgnoreCase(email)) {
-				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_EMAIL_ALREADY_EXIST, "[ EMAIL TAKEN ] This email is taken bu another user.");
+				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_EMAIL_ALREADY_EXIST,
+						"[ EMAIL TAKEN ] This email is taken bu another user.");
 			}
 		}
-		if (newUserInfo.getPhoneNumber() != "") {
+		if (newUserInfo.getPhoneNumber() != "" && !currentUser.getPhoneNumber().equals(newUserInfo.getPhoneNumber())) {
 			if (usernameRepository.existsByPhoneNumber(phone)) {
-				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_PHONE_NUMBER_ALREADY_EXISTED, "[ PHONE TAKEN ] This phone number is taken by another user.");
+				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_PHONE_NUMBER_ALREADY_EXISTED,
+						"[ PHONE TAKEN ] This phone number is taken by another user.");
 			}
 		}
-		
+
 		currentUser = usernameRepository.save(currentUser);
-		
-		if(imageFile != null) {
+
+		if (imageFile != null) {
 			fileStorageService.deleteImage(currentUser.getProfileImage(), "profiles");
 			currentUser.setProfileImage(fileStorageService.saveImage(imageFile, "profiles"));
 		}

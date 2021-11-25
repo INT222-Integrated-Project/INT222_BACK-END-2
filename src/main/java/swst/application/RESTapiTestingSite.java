@@ -88,6 +88,11 @@ public class RESTapiTestingSite {
 
 	@Autowired
 	private FileStorageService fileStorageService;
+	
+	@PostMapping("/put/test")
+	public UsernamesModels putUsernameull(@RequestPart UsernamesModels models) {
+		return models;
+	}
 
 	@PostMapping("/pc")
 	public ResponseEntity<ProductsColor> productPost() {

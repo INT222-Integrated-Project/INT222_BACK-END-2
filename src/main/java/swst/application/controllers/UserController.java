@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -149,24 +150,39 @@ public class UserController {
 	}
 
 	// [ editUser ]
-	public UsernamesModels editUser(UserNameModelEdit newUserInfo, HttpServletRequest request) {
+	public UsernamesModels editUser(UsernamesModels newUserInfo, MultipartFile imageFile, HttpServletRequest request) {
 		UsernamesModels currentUser = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
 		if (currentUser == null) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 					"[ NOT FOUND ] The user with this name is not exist");
 		}
 
-		String profileImage = (newUserInfo.getProfileImage() == "" ? currentUser.getProfileImage()
-				: newUserInfo.getProfileImage());
+		String profileImage = (newUserInfo.getProfileImage() == "" ? currentUser.getProfileImage() : newUserInfo.getProfileImage());
 		String address = (newUserInfo.getAddress() == "" ? currentUser.getAddress() : newUserInfo.getAddress());
 		String firstName = (newUserInfo.getFirstName() == "" ? currentUser.getFirstName() : newUserInfo.getFirstName());
 		String lastName = (newUserInfo.getLastName() == "" ? currentUser.getLastName() : newUserInfo.getLastName());
+		String email = (newUserInfo.getEmail() == "" ? currentUser.getEmail() : newUserInfo.getEmail());
+		String phone = (newUserInfo.getPhoneNumber() == "" ? currentUser.getPhoneNumber() : newUserInfo.getPhoneNumber());
 
 		currentUser.setProfileImage(profileImage);
 		currentUser.setAddress(address);
 		currentUser.setFirstName(firstName);
 		currentUser.setLastName(lastName);
+		currentUser.setEmail(email);
+		currentUser.setPhoneNumber(phone);
 
+		if (newUserInfo.getEmail() != "") {
+			if (usernameRepository.existsByEmailIgnoreCase(email)) {
+				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_EMAIL_ALREADY_EXIST, "[ EMAIL TAKEN ] This email is taken bu another user.");
+			}
+		}
+		if (newUserInfo.getPhoneNumber() != "") {
+			if (usernameRepository.existsByPhoneNumber(phone)) {
+				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_PHONE_NUMBER_ALREADY_EXISTED, "[ PHONE TAKEN ] This phone number is taken by another user.");
+			}
+		}
+
+		currentUser = usernameRepository.save(currentUser);
 		return currentUser;
 	}
 

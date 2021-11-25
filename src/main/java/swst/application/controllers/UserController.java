@@ -33,6 +33,7 @@ import swst.application.models.LoginModel;
 import swst.application.models.LoginResponseModel;
 import swst.application.repositories.RolesRepository;
 import swst.application.repositories.UsernameRepository;
+import swst.application.services.FileStorageService;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +44,9 @@ public class UserController {
 	private final UsernameRepository usernameRepository;
 	@Autowired
 	private final RolesRepository rolesRepository;
+	@Autowired
+	private final FileStorageService fileStorageService;
+	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
@@ -180,6 +184,13 @@ public class UserController {
 			if (usernameRepository.existsByPhoneNumber(phone)) {
 				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_PHONE_NUMBER_ALREADY_EXISTED, "[ PHONE TAKEN ] This phone number is taken by another user.");
 			}
+		}
+		
+		currentUser = usernameRepository.save(currentUser);
+		
+		if(imageFile != null) {
+			fileStorageService.deleteImage(currentUser.getProfileImage(), "profiles");
+			currentUser.setProfileImage(fileStorageService.saveImage(imageFile, "profiles"));
 		}
 
 		currentUser = usernameRepository.save(currentUser);

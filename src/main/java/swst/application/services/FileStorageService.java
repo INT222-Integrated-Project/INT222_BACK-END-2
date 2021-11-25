@@ -61,7 +61,7 @@ public class FileStorageService {
 		log.info("=============================================");
 	}
 
-	public String saveProductImage(MultipartFile imageFile, String folder) {
+	public String saveImage(MultipartFile imageFile, String folder) {
 
 		if (imageFile.getSize() > 8000000) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_IMAGE_FAILED, "[ FAILED ] Image can't be more than 8MB");

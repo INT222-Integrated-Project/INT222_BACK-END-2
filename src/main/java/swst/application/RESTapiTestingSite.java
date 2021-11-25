@@ -116,7 +116,7 @@ public class RESTapiTestingSite {
 			throw new ExceptionFoundation(EXCEPTION_CODES.DEAD, "LOL!");
 		}
 
-		fileStorageService.saveProductImage(file, "products");
+		fileStorageService.saveImage(file, "products");
 		return new ActionResponseModel("Uploaded", true);
 	}
 

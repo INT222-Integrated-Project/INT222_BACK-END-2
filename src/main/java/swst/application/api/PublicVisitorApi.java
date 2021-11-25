@@ -36,6 +36,7 @@ import swst.application.repositories.BrandsRepository;
 import swst.application.repositories.ColorsRepository;
 import swst.application.repositories.ProductsColorRepository;
 import swst.application.repositories.ProductsRepository;
+import swst.application.services.FileStorageService;
 
 @RestController
 @RequestMapping("/public")
@@ -52,7 +53,28 @@ public class PublicVisitorApi {
 	@Autowired
 	private final BrandsRepository brandRepository;
 	@Autowired
+	private final FileStorageService fileStorageService;
+
+	@Autowired
 	private final ProductsColorRepository productsColorRepository;
+
+	// [ getUserProfileImage ]
+	@GetMapping(value = "/profileimage/{imageFileName}", produces = { MediaType.IMAGE_JPEG_VALUE,
+			MediaType.IMAGE_PNG_VALUE })
+	public ResponseEntity<Resource> getUserProfileImage(@PathVariable String imageFileName) {
+		return ResponseEntity.ok().body(fileStorageService.loadImage(imageFileName, "profiles"));
+	}
+
+	// [ getProductImage ]
+	@GetMapping(value = "/productImage/{imageFileName}", produces = { MediaType.IMAGE_JPEG_VALUE,
+			MediaType.IMAGE_PNG_VALUE })
+	public ResponseEntity<Resource> getProductImage(@PathVariable String imageFileName) {
+		return ResponseEntity.ok().body(fileStorageService.loadImage(imageFileName, "products"));
+	}
+	
+	
+	
+	
 
 	// [ listProductWithPage ] Will list product with page, optional with name.
 	@GetMapping("/products")
@@ -72,12 +94,6 @@ public class PublicVisitorApi {
 	public Page<Models> listModelWithpage(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "30") int size, @RequestParam(defaultValue = "") String searchname) {
 		return modelController.listModelsByPage(page, size, searchname);
-	}
-
-	// [ getProductImage ]
-	@GetMapping(value = "/prodImg/{productId}", produces = { MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
-	public ResponseEntity<Resource> getProductImage(@PathVariable int productId) {
-		return ResponseEntity.ok().body(productsController.getProductImage(productId));
 	}
 
 	// [ listAllColors ]

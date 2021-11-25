@@ -109,7 +109,7 @@ public class ProductsController {
 		}
 
 		if (imageFile != null) {
-			newProduct.setProductImage(fileStorageService.saveProductImage(imageFile, "products"));
+			newProduct.setProductImage(fileStorageService.saveImage(imageFile, "products"));
 		}
 
 		newProduct = productsRepository.save(newProduct);
@@ -154,7 +154,7 @@ public class ProductsController {
 		// log.info("save OK");
 		if (file != null) {
 			fileStorageService.deleteImage(editProduct.getProductImage(), "products");
-			editProduct.setProductImage(fileStorageService.saveProductImage(file, "products"));
+			editProduct.setProductImage(fileStorageService.saveImage(file, "products"));
 			productsRepository.save(editProduct);
 		}
 

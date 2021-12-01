@@ -1,6 +1,7 @@
 package swst.application.api;
 
 import java.net.URI;
+import java.net.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,7 +60,7 @@ public class UsersApi {
 	public ResponseEntity<ActionResponseModel> cancleOrder(@RequestParam long orderId, HttpServletRequest request) {
 		URI uri = URI.create(
 				ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/cancleorder/" + orderId).toString());
-		return ResponseEntity.created(uri).body(productOrderController.cancelOrcder(orderId, request));
+		return ResponseEntity.created(uri).body(productOrderController.cancelOrder(orderId, request));
 	}
 
 	// [ getMyprofile ] Will return a profile of that user.
@@ -83,10 +84,19 @@ public class UsersApi {
 	}
 
 	// [ addOrders ]
-	@PostMapping(value = "/addOrder", produces = { MediaType.APPLICATION_JSON_VALUE })
+	@PostMapping(value = "/addOrder")
 	public ResponseEntity<ActionResponseModel> addOrder(@RequestPart Orders newOrders, HttpServletRequest request) {
 		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/addOrder").toString());
 		return ResponseEntity.created(uri).body(productOrderController.addOrder(request, newOrders));
+	}
+
+	// [ addOneOrder ]
+	@PostMapping(value = "/purchase")
+	public ResponseEntity<Orders> addOneOrder(@RequestParam long productColorId, @RequestParam int quantity,
+			HttpServletRequest request) {
+		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/purchase").toString());
+		return ResponseEntity.created(uri)
+				.body(productOrderController.purchaseOneProduct(productColorId, quantity, request));
 	}
 
 	// [ changePassword ]

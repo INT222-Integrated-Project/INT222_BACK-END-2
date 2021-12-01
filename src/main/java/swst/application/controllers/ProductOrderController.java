@@ -55,6 +55,42 @@ public class ProductOrderController {
 	@Value("${application.pagerequest.defaultsize.orders}")
 	private int defaultSizeOrders;
 
+	// [ purchaseOneProduct ]
+	public Orders purchaseOneProduct(long productColorid, int quantity, HttpServletRequest request) {
+
+		ProductsColor productColorOrdered = productsColorRepository.findById(productColorid)
+				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+						"[ NOT FOUND ] This product is not exist."));
+
+		if (quantity > productColorOrdered.getQuantity()) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ENOUGH_GOODS_FOR_SELL,
+					"[ OUT OF STOCK ] You cannot order more than how many available on stock.");
+		} 
+		
+		productColorOrdered.setQuantity(productColorOrdered.getQuantity() - quantity);
+		productsColorRepository.save(productColorOrdered);
+		
+		Timestamp currenTime = new Timestamp(System.currentTimeMillis());
+
+		Orders newOrder = new Orders();
+		newOrder.setDateTime(currenTime.toString());
+		newOrder.setAllPrice(quantity * productColorOrdered.getProduct().getCasePrice());
+		newOrder.setPaymentDate(null);
+		newOrder.setOrderStatus(orderStatusRepository.findByStatus("To Pay"));
+		newOrder.setUserNameID(
+				usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)).getUserNameID());
+		newOrder = ordersRepository.save(newOrder);
+
+		OrderDetail newOrderDetail = new OrderDetail();
+		newOrderDetail.setOrders(newOrder);
+		newOrderDetail.setProductcolorID(productColorid);
+		newOrderDetail.setQuantityOrder(quantity);
+		newOrderDetail.setUnitPrice(productColorOrdered.getProduct().getCasePrice());
+		orderDetailRepository.save(newOrderDetail);
+
+		return newOrder;
+	}
+
 	// [ ListOrderByUserID]
 	public Page<Orders> listOrderByUserID(int page, int size, HttpServletRequest request) {
 		if (page < 0) {
@@ -121,12 +157,15 @@ public class ProductOrderController {
 				throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ON_STORE,
 						"[ NOT ON STORE ] This item is not exist or not for sell.");
 			}
-			Optional<Products> targerProduct = productsRepository.findById(targerProductColor.get().getProduct().getCaseID());
+			Optional<Products> targerProduct = productsRepository
+					.findById(targerProductColor.get().getProduct().getCaseID());
 			if (targerProduct == null) {
 				deleteOrder(addOrder.getOrderID());
 				throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ON_STORE,
 						"[ NOT ON STORE ] This item is not exist or not for sell.");
 			}
+			
+			
 			newOrder.setQuantityOrder(currentOrder.getQuantityOrder());
 			newOrder.setUnitPrice(targerProduct.get().getCasePrice());
 			newOrder.setOrders(addOrder);
@@ -157,8 +196,8 @@ public class ProductOrderController {
 		return addOrder;
 	}
 
-	// [ cancelOrcder ]
-	public ActionResponseModel cancelOrcder(long orderId, HttpServletRequest request) {
+	// [ cancelOrder ]
+	public ActionResponseModel cancelOrder(long orderId, HttpServletRequest request) {
 
 		UsernamesModels currentUserName = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
 

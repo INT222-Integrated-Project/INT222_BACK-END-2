@@ -66,8 +66,7 @@ public class PublicVisitorApi {
 	}
 
 	// [ getProductImage ]
-	@GetMapping(value = "/productImage/{imageFileName}", produces = { MediaType.IMAGE_JPEG_VALUE,
-			MediaType.IMAGE_PNG_VALUE })
+	@GetMapping(value = "/productImage/{imageFileName}", produces = { MediaType.IMAGE_JPEG_VALUE,MediaType.IMAGE_PNG_VALUE })
 	public ResponseEntity<Resource> getProductImage(@PathVariable String imageFileName) {
 		return ResponseEntity.ok().body(fileStorageService.loadImage(imageFileName, "products"));
 	}

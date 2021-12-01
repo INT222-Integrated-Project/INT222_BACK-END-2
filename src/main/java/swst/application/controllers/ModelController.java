@@ -41,7 +41,7 @@ public class ModelController {
 		if (searchname == "") {
 			result = modelsRepository.findAll(sendPageRequest);
 		} else {
-			result = modelsRepository.findByModelNameContaining(searchname, sendPageRequest);
+			result = modelsRepository.findByModelNameContainingIgnorecase(searchname, sendPageRequest);
 			if (result.getTotalPages() < page + 1) {
 				throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :(");
 			}

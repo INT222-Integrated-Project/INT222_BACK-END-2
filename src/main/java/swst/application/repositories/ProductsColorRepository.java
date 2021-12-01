@@ -12,4 +12,6 @@ public interface ProductsColorRepository extends JpaRepository<ProductsColor, Lo
 
 	//@Query(value = "SELECT p FROM ProductsColor p WHERE p.caseID = ?1")
 	List<ProductsColor> findAllByProduct(Products product);
+	
+	
 }

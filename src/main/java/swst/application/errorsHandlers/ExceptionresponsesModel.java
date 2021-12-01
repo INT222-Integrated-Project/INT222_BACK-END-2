@@ -19,6 +19,9 @@ public class ExceptionresponsesModel {
 		SAVE_DELETE_FAILED(2003), // Unable to delete. lol
 		SAVE_OBJECT_EXISTED(2004),// Saving failed because the object is already exist.
 		SAVE_NOT_THE_OWNER(2005),// The user is not an owner of the object.
+		SAVE_NAME_EXISTS(2006),// You cannot have the same name as another product existed.
+		SAVE_ILLEGAL_NAME(2007),// You cannot have the same name as another product existed.
+		SAVE_SENSITIVE_INFO_EXISTS(2008), //Deleting some will affect the entire application.
 		
 
 		// Authentication

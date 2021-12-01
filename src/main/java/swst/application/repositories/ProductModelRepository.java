@@ -6,5 +6,5 @@ import swst.application.entities.ProductModel;
 import swst.application.models.relationkey.ProductModelRelationKey;
 
 public interface ProductModelRepository extends JpaRepository<ProductModel, ProductModelRelationKey>{
-
+	
 }

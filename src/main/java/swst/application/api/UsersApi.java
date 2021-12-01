@@ -44,16 +44,15 @@ public class UsersApi {
 	private final ProductOrderController productOrderController;
 
 	// [ editMyprofile ]
-	@PutMapping(value = "/editMyprofile", produces = { MediaType.APPLICATION_JSON_VALUE , MediaType.IMAGE_JPEG_VALUE })
+	@PutMapping(value = "/editMyprofile", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.IMAGE_JPEG_VALUE })
 	public ResponseEntity<UsernamesModels> editMyprofile(@RequestPart(required = true) UsernamesModels newProfileInfo,
 			@RequestPart(required = false) MultipartFile userProfileImage, HttpServletRequest request) {
 		URI uri = URI
 				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/editMyprodile").toString());
 		return ResponseEntity.created(uri).body(userController.editUser(newProfileInfo, userProfileImage, request));
 	}
-	
+
 	// [ uploadProfileImage ]
-	
 
 	// [ cancleUserOrder ]
 	@PutMapping("/cancleorder")
@@ -62,14 +61,6 @@ public class UsersApi {
 				ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/cancleorder/" + orderId).toString());
 		return ResponseEntity.created(uri).body(productOrderController.cancelOrcder(orderId, request));
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 
 	// [ getMyprofile ] Will return a profile of that user.
 	@GetMapping("/myprofile")
@@ -92,7 +83,7 @@ public class UsersApi {
 	}
 
 	// [ addOrders ]
-	@PostMapping("/addOrder")
+	@PostMapping(value = "/addOrder", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<ActionResponseModel> addOrder(@RequestPart Orders newOrders, HttpServletRequest request) {
 		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/addOrder").toString());
 		return ResponseEntity.created(uri).body(productOrderController.addOrder(request, newOrders));

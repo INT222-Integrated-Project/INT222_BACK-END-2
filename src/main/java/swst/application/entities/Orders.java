@@ -50,5 +50,10 @@ public class Orders {
 	@Basic(optional = true)
 	@JoinColumn(name = "statusID", referencedColumnName = "statusID")
 	private OrderStatus orderStatus;
-
+	/*
+	@ManyToOne
+	@Basic(optional = true)
+	@JoinColumn(name="modelID", referencedColumnName = "modelID")
+	private Models models;
+*/
 }

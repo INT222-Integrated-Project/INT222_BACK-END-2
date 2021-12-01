@@ -25,6 +25,7 @@ import swst.application.entities.UsernamesModels;
 import swst.application.errorsHandlers.ExceptionFoundation;
 import swst.application.errorsHandlers.ExceptionresponsesModel.EXCEPTION_CODES;
 import swst.application.models.ActionResponseModel;
+import swst.application.repositories.OrderDetailRepository;
 import swst.application.repositories.ProductsColorRepository;
 import swst.application.repositories.ProductsRepository;
 import swst.application.repositories.RolesRepository;
@@ -46,12 +47,98 @@ public class ProductsController {
 	private ProductsColorRepository productsColorRepository;
 	@Autowired
 	private FileStorageService fileStorageService;
+	@Autowired
+	private OrderDetailRepository orderDetailRepository;
 
 	@Value("${application.pagerequest.maxsize.products}")
 	private int maxsizeProducts;
 
 	@Value("${application.pagerequest.defaultsize.products}")
 	private int defaultSizeProduct;
+
+	// [ createNewproduct ]
+	public Products createNewproduct(Products incoming, MultipartFile imageFile, HttpServletRequest request) {
+
+		Products newProduct = new Products();
+
+		if (incoming.getCaseName().length() > 24) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_ILLEGAL_NAME,
+					"[ ILLEGAL NAME ] Name cannot be longer than 24 characters.");
+		}
+
+		if (incoming.getCaseID() != 0) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_OBJECT_EXISTED,
+					"[ EXISTED ] Better to edit it instead of create a new one.");
+		}
+		if (productsRepository.existsByCaseNameIgnoreCase(incoming.getCaseName())) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_NAME_EXISTS, "[ EXISTED ] This name is alrealdy taken");
+		}
+		newProduct.setProductImage(null);
+		newProduct.setCaseName(incoming.getCaseName());
+		newProduct.setCasePrice(incoming.getCasePrice());
+		newProduct.setModels(incoming.getModels());
+		newProduct.setCaseDate(LocalDate.now().toString());
+		newProduct.setIsOnStore(true);
+		newProduct.setUsernameID(
+				usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)).getUserNameID());
+		if (incoming.getCaseDescription() == "") {
+			newProduct.setCaseDescription("A case added by " + newProduct.getUsernameID());
+		} else {
+			newProduct.setCaseDescription(incoming.getCaseDescription());
+		}
+
+		if (imageFile != null) {
+
+			newProduct.setProductImage(fileStorageService.saveImage(imageFile, "products"));
+		}
+
+		newProduct = productsRepository.save(newProduct);
+		loopSaveProductColor(incoming.getProductColor(), newProduct);
+
+		return newProduct;
+
+	}
+
+	// [ deleteProduct ]
+	public ActionResponseModel deleteProductById(int id, HttpServletRequest request) {
+		Products userproduct = productsRepository.findById(id).orElseThrow(
+				() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :("));
+
+		UsernamesModels currentUser = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
+
+		for (int i = 0; i < userproduct.getProductColor().size(); i++) {
+			log.info("RUNING : " + userproduct.getProductColor().get(i).getProductcolorID());
+			if (orderDetailRepository
+					.existsByproductcolorID(userproduct.getProductColor().get(i).getProductcolorID())) {
+				throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_SENSITIVE_INFO_EXISTS,
+						"[ NOT ALLOWED ] You cannot delete a product that is already did a transaction.");
+			}
+		}
+
+		if (!currentUser.getRole().getRoleName().equals("admin")) {
+			if (currentUser.getUserNameID() == userproduct.getUsernameID()) {
+				return deleteProductMethod(userproduct, currentUser);
+			} else {
+				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_NOT_ALLOWED,
+						"[ Not the owner ] You are not the owner of this products.");
+			}
+		} else {
+			return deleteProductMethod(userproduct, currentUser);
+		}
+
+	}
+
+	private ActionResponseModel deleteProductMethod(Products product, UsernamesModels user) {
+		int productId = product.getCaseID();
+		fileStorageService.deleteImage(product.getProductImage(), "products");
+		productsRepository.deleteById(product.getCaseID());
+		return new ActionResponseModel("Deleted the product with id : " + productId, true);
+	}
+
+	// ###################################################################
+	// ###################################################################
+	// ###################################################################
+	// ###################################################################
 
 	// [ getProductImage ]
 	public Resource getProductImage(int productId) {
@@ -85,40 +172,6 @@ public class ProductsController {
 		return result;
 	}
 
-	// [ createNewproduct ]
-	public Products createNewproduct(Products incoming, MultipartFile imageFile, HttpServletRequest request) {
-
-		Products newProduct = new Products();
-
-		if (incoming.getCaseID() != 0) {
-			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_OBJECT_EXISTED,
-					"[ EXISTED ] Better to edit it instead of create a new one.");
-		}
-		newProduct.setProductImage("404notfound.png");
-		newProduct.setCaseName(incoming.getCaseName());
-		newProduct.setCasePrice(incoming.getCasePrice());
-		newProduct.setModels(incoming.getModels());
-		newProduct.setCaseDate(LocalDate.now().toString());
-		newProduct.setIsOnStore(true);
-		newProduct.setUsernameID(
-				usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)).getUserNameID());
-		if (incoming.getCaseDescription() == "") {
-			newProduct.setCaseDescription("A case added by " + newProduct.getUsernameID());
-		} else {
-			newProduct.setCaseDescription(incoming.getCaseDescription());
-		}
-
-		if (imageFile != null) {
-			newProduct.setProductImage(fileStorageService.saveImage(imageFile, "products"));
-		}
-
-		newProduct = productsRepository.save(newProduct);
-		loopSaveProductColor(incoming.getProductColor(), newProduct);
-
-		return newProduct;
-
-	}
-
 	// [ listProductColorsByProduct ]
 	public List<ProductsColor> listProductColorsByProduct(int caseId) {
 		Products searchBy = productsRepository.findById(caseId)
@@ -128,10 +181,9 @@ public class ProductsController {
 	}
 
 	// [ editExistingProduct ]
-	public ActionResponseModel editExistingProduct(Products incoming, MultipartFile file, int productId,
-			HttpServletRequest request) {
+	public ActionResponseModel editExistingProduct(Products incoming, MultipartFile file, HttpServletRequest request) {
 		// log.info("Entered OK : ID :" + productId);
-		Products editProduct = productsRepository.findById(productId)
+		Products editProduct = productsRepository.findById(incoming.getCaseID())
 				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 						"[ NOT FOUND ] This product ID never exist."));
 
@@ -158,7 +210,7 @@ public class ProductsController {
 			productsRepository.save(editProduct);
 		}
 
-		return new ActionResponseModel("[ SAVED ] Product id " + productId + " is saved.", true);
+		return new ActionResponseModel("[ SAVED ] Product id " + incoming.getCaseID() + " is saved.", true);
 	}
 
 	// [ addOrRemoveStock ]

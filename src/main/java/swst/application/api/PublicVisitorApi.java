@@ -71,29 +71,11 @@ public class PublicVisitorApi {
 	public ResponseEntity<Resource> getProductImage(@PathVariable String imageFileName) {
 		return ResponseEntity.ok().body(fileStorageService.loadImage(imageFileName, "products"));
 	}
-	
-	
-	
-	
-
-	// [ listProductWithPage ] Will list product with page, optional with name.
-	@GetMapping("/products")
-	public Page<Products> listProductWithPage(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "9") int size, @RequestParam(defaultValue = "") String searchname) {
-		return productsController.listProductOnStore(page, size, searchname);
-	}
 
 	// [ getProductById ]
 	@GetMapping("/products/{productID}")
 	public ResponseEntity<Products> getProductById(@PathVariable int productID) {
 		return ResponseEntity.ok().body(productsController.findProductById(productID));
-	}
-
-	// [ listModelWithpage ] List all models in the database with page.
-	@GetMapping("/models")
-	public Page<Models> listModelWithpage(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "30") int size, @RequestParam(defaultValue = "") String searchname) {
-		return modelController.listModelsByPage(page, size, searchname);
 	}
 
 	// [ listAllColors ]
@@ -108,11 +90,28 @@ public class PublicVisitorApi {
 		return brandRepository.findAll();
 	}
 
+	// [ listProductWithPage ] Will list product with page, optional with name.
+	@GetMapping("/products")
+	public Page<Products> listProductWithPage(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "9") int size, @RequestParam(defaultValue = "") String searchname) {
+		return productsController.listProductOnStore(page, size, searchname);
+	}
+	
+	// [ listModelWithpage ] List all models in the database with page.
+	@GetMapping("/models")
+	public Page<Models> listModelWithpage(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "30") int size, @RequestParam(defaultValue = "") String searchname) {
+		return modelController.listModelsByPage(page, size, searchname);
+	}
+
 	// [ listProductColors ]
-	@GetMapping("/productcolor/{caseID}")
-	public ResponseEntity<List<ProductsColor>> listProductColors(@PathVariable int caseID) {
+	@GetMapping("/productcolor")
+	public ResponseEntity<List<ProductsColor>> listProductColors(@RequestParam int caseID) {
 		return ResponseEntity.ok().body(productsController.listProductColorsByProduct(caseID));
 	}
+	// ################################
+	// ################################
+	// ################################
 
 	// [ createNewUser ] Will create new user.
 	@PostMapping("/auth/register")

@@ -55,6 +55,59 @@ public class UserController {
 
 	@Value("${application.pagerequest.defaultsize.users}")
 	private int defaultSizeUsers;
+	
+
+	// [ editUser ]
+	public UsernamesModels editUser(UsernamesModels newUserInfo, MultipartFile imageFile, HttpServletRequest request) {
+		UsernamesModels currentUser = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
+		if (currentUser == null) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
+					"[ NOT FOUND ] The user with this name is not exist");
+		}
+
+		String profileImage = (newUserInfo.getProfileImage() == "" ? currentUser.getProfileImage()
+				: newUserInfo.getProfileImage());
+		String address = (newUserInfo.getAddress() == "" ? currentUser.getAddress() : newUserInfo.getAddress());
+		String firstName = (newUserInfo.getFirstName() == "" ? currentUser.getFirstName() : newUserInfo.getFirstName());
+		String lastName = (newUserInfo.getLastName() == "" ? currentUser.getLastName() : newUserInfo.getLastName());
+		String email = (newUserInfo.getEmail() == "" ? currentUser.getEmail() : newUserInfo.getEmail());
+		String phone = (newUserInfo.getPhoneNumber() == "" ? currentUser.getPhoneNumber()
+				: newUserInfo.getPhoneNumber());
+
+		if (currentUser.getEmail() == null) {
+			currentUser.setEmail("");
+		}
+
+		if (!currentUser.getEmail().equals(newUserInfo.getEmail())) {
+			if (usernameRepository.existsByEmailIgnoreCase(email)) {
+				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_EMAIL_ALREADY_EXIST,
+						"[ EMAIL TAKEN ] This email is taken bu another user.");
+			}
+		}
+		if (!currentUser.getPhoneNumber().equals(newUserInfo.getPhoneNumber())) {
+			if (usernameRepository.existsByPhoneNumber(phone)) {
+				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_PHONE_NUMBER_ALREADY_EXISTED,
+						"[ PHONE TAKEN ] This phone number is taken by another user.");
+			}
+		}
+
+		currentUser.setProfileImage(profileImage);
+		currentUser.setAddress(address);
+		currentUser.setFirstName(firstName);
+		currentUser.setLastName(lastName);
+		currentUser.setEmail(email);
+		currentUser.setPhoneNumber(phone);
+
+		currentUser = usernameRepository.save(currentUser);
+
+		if (imageFile != null) {
+			fileStorageService.deleteImage(currentUser.getProfileImage(), "profiles");
+			currentUser.setProfileImage(fileStorageService.saveImage(imageFile, "profiles"));
+		}
+
+		currentUser = usernameRepository.save(currentUser);
+		return currentUser;
+	}
 
 	// [ register ]
 	public UsernamesModels register(CreateNewUserModel newuser) {
@@ -153,53 +206,6 @@ public class UserController {
 				+ assignTo.getRole().getRoleName(), true);
 	}
 
-	// [ editUser ]
-	public UsernamesModels editUser(UsernamesModels newUserInfo, MultipartFile imageFile, HttpServletRequest request) {
-		UsernamesModels currentUser = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
-		if (currentUser == null) {
-			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
-					"[ NOT FOUND ] The user with this name is not exist");
-		}
-
-		String profileImage = (newUserInfo.getProfileImage() == "" ? currentUser.getProfileImage()
-				: newUserInfo.getProfileImage());
-		String address = (newUserInfo.getAddress() == "" ? currentUser.getAddress() : newUserInfo.getAddress());
-		String firstName = (newUserInfo.getFirstName() == "" ? currentUser.getFirstName() : newUserInfo.getFirstName());
-		String lastName = (newUserInfo.getLastName() == "" ? currentUser.getLastName() : newUserInfo.getLastName());
-		String email = (newUserInfo.getEmail() == "" ? currentUser.getEmail() : newUserInfo.getEmail());
-		String phone = (newUserInfo.getPhoneNumber() == "" ? currentUser.getPhoneNumber()
-				: newUserInfo.getPhoneNumber());
-
-		if (!currentUser.getEmail().equals(newUserInfo.getEmail())) {
-			if (usernameRepository.existsByEmailIgnoreCase(email)) {
-				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_EMAIL_ALREADY_EXIST,
-						"[ EMAIL TAKEN ] This email is taken bu another user.");
-			}
-		}
-		if (!currentUser.getPhoneNumber().equals(newUserInfo.getPhoneNumber())) {
-			if (usernameRepository.existsByPhoneNumber(phone)) {
-				throw new ExceptionFoundation(EXCEPTION_CODES.AUTHEN_PHONE_NUMBER_ALREADY_EXISTED,
-						"[ PHONE TAKEN ] This phone number is taken by another user.");
-			}
-		}
-
-		currentUser.setProfileImage(profileImage);
-		currentUser.setAddress(address);
-		currentUser.setFirstName(firstName);
-		currentUser.setLastName(lastName);
-		currentUser.setEmail(email);
-		currentUser.setPhoneNumber(phone);
-
-		currentUser = usernameRepository.save(currentUser);
-
-		if (imageFile != null) {
-			fileStorageService.deleteImage(currentUser.getProfileImage(), "profiles");
-			currentUser.setProfileImage(fileStorageService.saveImage(imageFile, "profiles"));
-		}
-
-		currentUser = usernameRepository.save(currentUser);
-		return currentUser;
-	}
 
 	// [ changePassword ]
 	public ActionResponseModel changePassword(String oldPassword, String newPassword, HttpServletRequest request) {

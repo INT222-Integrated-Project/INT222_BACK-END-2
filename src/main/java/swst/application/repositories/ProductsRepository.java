@@ -20,4 +20,6 @@ public interface ProductsRepository extends JpaRepository<Products, Integer> {
 	Page<Products> findByUsernameID(int usernameID, Pageable pageable);
 
 	Double findCasePriceByCaseID(int caseID);
+	
+	boolean existsByCaseNameIgnoreCase(String caseaName);
 }

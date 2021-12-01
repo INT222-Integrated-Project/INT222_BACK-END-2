@@ -1,5 +1,6 @@
 package swst.application;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.sql.Blob;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import lombok.extern.slf4j.Slf4j;
 import swst.application.controllers.UserController;
 import swst.application.entities.Brands;
 import swst.application.entities.Colors;
@@ -54,6 +57,7 @@ import swst.application.repositories.OrderStatusRepository;
 
 @RestController
 @RequestMapping("/test")
+@Slf4j
 public class RESTapiTestingSite {
 	/*
 	 * Repositories
@@ -89,6 +93,21 @@ public class RESTapiTestingSite {
 	@Autowired
 	private FileStorageService fileStorageService;
 	
+	@GetMapping("/getAllDetails")
+	public ResponseEntity<Page<OrderDetail>> getAllDetail(){
+		Pageable sendPageRequest = PageRequest.of(0, 200);
+		long[] setOfIds = new long[2];
+		setOfIds[0] = 76;
+		setOfIds[1] = 71;
+		return ResponseEntity.ok().body(orderDetailRepository.findAllByProductcolorID(setOfIds, sendPageRequest));
+	}
+
+	@PostMapping(value = "/upload/shit")
+	public ResponseEntity<ActionResponseModel> uploadeImage(@RequestParam("imageFile") MultipartFile imageFile) {
+
+		return ResponseEntity.ok().body(new ActionResponseModel("Uploaded : " + fileStorageService.saveImage(imageFile, "products"), true));
+	}
+
 	@PostMapping("/put/test")
 	public UsernamesModels putUsernameull(@RequestPart UsernamesModels models) {
 		return models;
@@ -100,7 +119,7 @@ public class RESTapiTestingSite {
 		ProductsColor newColor = new ProductsColor();
 		newColor.setProduct(productsRepository.findById(1).get());
 		newColor.setColor(colorsRepository.findById(1).get());
-		
+
 		newColor.setQuantity(998);
 		newColor.setImageCase(null);
 

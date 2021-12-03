@@ -1,7 +1,6 @@
 package swst.application.controllers;
 
 import java.time.LocalDate;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,15 +15,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import lombok.extern.slf4j.Slf4j;
 import swst.application.authenSecurity.TokenUtills;
-import swst.application.entities.ProductModel;
 import swst.application.entities.Products;
 import swst.application.entities.ProductsColor;
 import swst.application.entities.Roles;
 import swst.application.entities.UsernamesModels;
 import swst.application.entities.seperated.ProductColorToProducts;
-import swst.application.entities.seperated.ProductColorsToProducts;
 import swst.application.errorsHandlers.ExceptionFoundation;
 import swst.application.errorsHandlers.ExceptionresponsesModel.EXCEPTION_CODES;
 import swst.application.models.ActionResponseModel;
@@ -38,7 +34,6 @@ import swst.application.services.FileStorageService;
 
 @Service
 @PropertySource("userdefined.properties")
-@Slf4j
 public class ProductsController {
 
 	@Autowired
@@ -54,7 +49,7 @@ public class ProductsController {
 	@Autowired
 	private OrderDetailRepository orderDetailRepository;
 	@Autowired
-	private ProductColorToProductsRepository productColorToProductsRepository; 
+	private ProductColorToProductsRepository productColorToProductsRepository;
 
 	@Value("${application.pagerequest.maxsize.products}")
 	private int maxsizeProducts;
@@ -309,9 +304,9 @@ public class ProductsController {
 		}
 		return null;
 	}
-	
+
 	// [ getProductByProductColorid ]
-	public List<ProductColorToProducts> getProductByProductColorid(){
+	public List<ProductColorToProducts> getProductByProductColorid() {
 		return productColorToProductsRepository.findAll();
 	}
 }

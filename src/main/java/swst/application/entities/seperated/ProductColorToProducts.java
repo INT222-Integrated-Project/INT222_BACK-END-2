@@ -3,7 +3,6 @@ package swst.application.entities.seperated;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,7 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import swst.application.entities.Colors;
-import swst.application.entities.Products;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,7 +33,7 @@ public class ProductColorToProducts {
 	@ManyToOne
 	@Basic(optional = true)
 	@JoinColumn(name = "caseID", referencedColumnName = "caseID")
-	private Products products;
+	private ProductOnly products;
 
 	@ManyToOne
 	@JoinColumn(name = "codeColor", referencedColumnName = "codeColor")

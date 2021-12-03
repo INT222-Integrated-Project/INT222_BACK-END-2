@@ -11,11 +11,15 @@ import swst.application.entities.OrderDetail;
 import swst.application.entities.Orders;
 
 public interface OrdersRepository extends JpaRepository<Orders, Long> {
-	List<Orders> findAllByUserNameID(int userNameID);
+	List<Orders> findAllByUserNameID(int userNameID); 
+	
+	Page<Orders> findAllByOrderByOrderIDDesc(Pageable pageable);
 
 	@Query(value = "SELECT o FROM Orders o WHERE o.userNameID = ?1 ORDER BY orderID DESC")
-	Page<Orders> findByUserNameID(int userNameID, Pageable pageable);
+	Page<Orders> findAllByUserNameID(int userNameID, Pageable pageable);
 	
 	@Query(value = "SELECT o FROM Orders o WHERE o.orderDetails = ?1 ORDER BY orderID DESC")
 	Page<Orders> findByOrderDetails(OrderDetail orderDetail,Pageable pageable);
+	
+	boolean existsByUserNameID(int userNameID);
 }

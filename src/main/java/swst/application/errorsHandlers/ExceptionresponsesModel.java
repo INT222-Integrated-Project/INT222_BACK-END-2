@@ -21,8 +21,7 @@ public class ExceptionresponsesModel {
 		SAVE_NOT_THE_OWNER(2005),// The user is not an owner of the object.
 		SAVE_NAME_EXISTS(2006),// You cannot have the same name as another product existed.
 		SAVE_ILLEGAL_NAME(2007),// You cannot have the same name as another product existed.
-		SAVE_SENSITIVE_INFO_EXISTS(2008), //Deleting some will affect the entire application.
-		
+		SAVE_SENSITIVE_INFO_EXISTS(2008), //Deleting some will affect the entire application.		
 
 		// Authentication
 		AUTHEN_BAD_CREDENTIALS(3001), // Username or password is incorrect. Or both!
@@ -49,6 +48,7 @@ public class ExceptionresponsesModel {
 		SHOP_NOT_ENOUGH_GOODS_FOR_SELL(6002), // Have 3 but order 4.
 		SHOP_NOT_ALLOW_TO_CANCLE(6003), // You paid for your product but want to cancle.
 		SHOP_NOT_ALLOW_TO_CHANGE_STATUS(6004), // You paid for your product but want to cancle.
+		SHOP_THIS_IS_YOUR_PRODUCT(6005), //What is the reason you buy an item that you are currently selling.
 		
 		// Others
 		DEAD(9999); // Just stupidly died with an unknown reason.

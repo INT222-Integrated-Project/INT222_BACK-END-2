@@ -95,7 +95,7 @@ public class StaffApi {
 	// [ editExistingProduct ]
 	@PutMapping(value = "/product", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.IMAGE_JPEG_VALUE,
 			MediaType.IMAGE_JPEG_VALUE })
-	public ResponseEntity<ActionResponseModel> editExistingProduct(@RequestPart Products incomingproduct,
+	public ResponseEntity<Products> editExistingProduct(@RequestPart Products incomingproduct,
 			@RequestParam(required = false) MultipartFile imageFile, HttpServletRequest request) {
 		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/product").toString());
 		return ResponseEntity.created(uri)

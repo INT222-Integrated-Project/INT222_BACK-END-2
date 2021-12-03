@@ -1,5 +1,6 @@
 package swst.application.entities;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import swst.application.entities.seperated.ProductColorToProducts;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -40,4 +42,10 @@ public class OrderDetail {
 	@JoinColumn(name = "orderid", nullable = false)
 	@JsonIgnore
 	private Orders orders;
+	
+	@ManyToOne
+	@Basic(optional = true)
+	@JoinColumn(name = "productcolorID", referencedColumnName = "productcolorID", insertable = false,updatable = false)
+	private ProductColorToProducts productColorToProducts;
+	
 }

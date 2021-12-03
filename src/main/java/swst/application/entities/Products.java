@@ -7,6 +7,8 @@ import javax.persistence.*;
 import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -31,6 +33,7 @@ public class Products {
 
 	@OneToMany(mappedBy = "product", orphanRemoval = true, fetch = FetchType.LAZY)
 	@Nullable
+	@JsonManagedReference
 	private List<ProductsColor> productColor;
 
 	@ManyToMany

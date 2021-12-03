@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.extern.slf4j.Slf4j;
+import swst.application.controllers.ProductsController;
 import swst.application.controllers.UserController;
 import swst.application.entities.Brands;
 import swst.application.entities.Colors;
@@ -39,6 +40,7 @@ import swst.application.entities.Products;
 import swst.application.entities.ProductsColor;
 import swst.application.entities.Roles;
 import swst.application.entities.UsernamesModels;
+import swst.application.entities.seperated.ProductColorToProducts;
 import swst.application.errorsHandlers.ExceptionFoundation;
 import swst.application.errorsHandlers.ExceptionresponsesModel.EXCEPTION_CODES;
 import swst.application.models.ActionResponseModel;
@@ -89,9 +91,16 @@ public class RESTapiTestingSite {
 	private OrderStatusRepository statusRepository;
 	@Autowired
 	private UserController ussrcontroller;
+	@Autowired
+	private ProductsController productsController;
 
 	@Autowired
 	private FileStorageService fileStorageService;
+	
+	@GetMapping("/protopro")
+	public ResponseEntity<List<ProductColorToProducts>> getProductColorcccsssdasdarfaw(){
+		return  ResponseEntity.ok().body(productsController.getProductByProductColorid());
+				}
 	
 	@GetMapping("/getAllDetails")
 	public ResponseEntity<Page<OrderDetail>> getAllDetail(){

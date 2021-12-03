@@ -92,7 +92,7 @@ public class UsersApi {
 
 	// [ addOneOrder ]
 	@PostMapping(value = "/purchase")
-	public ResponseEntity<Orders> addOneOrder(@RequestParam long productColorId, @RequestParam int quantity,
+	public ResponseEntity<Orders> addOneOrder(@RequestParam int productColorId, @RequestParam int quantity,
 			HttpServletRequest request) {
 		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/purchase").toString());
 		return ResponseEntity.created(uri)

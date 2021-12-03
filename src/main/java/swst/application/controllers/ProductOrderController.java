@@ -57,19 +57,27 @@ public class ProductOrderController {
 
 	// [ purchaseOneProduct ]
 	public Orders purchaseOneProduct(long productColorid, int quantity, HttpServletRequest request) {
+		log.info(productColorid + " : rderers " + quantity);
 
 		ProductsColor productColorOrdered = productsColorRepository.findById(productColorid)
 				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 						"[ NOT FOUND ] This product is not exist."));
-
+		
+		int currentUsername = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)).getUserNameID();
+		
+		if(productColorOrdered.getProduct().getUsernameID() == currentUsername) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_THIS_IS_YOUR_PRODUCT, "[ NOPE ] This is your product, just take it by hand.");
+		}
+		
+		log.info(productColorOrdered.getQuantity() + "");
 		if (quantity > productColorOrdered.getQuantity()) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ENOUGH_GOODS_FOR_SELL,
 					"[ OUT OF STOCK ] You cannot order more than how many available on stock.");
-		} 
-		
+		}
+
 		productColorOrdered.setQuantity(productColorOrdered.getQuantity() - quantity);
 		productsColorRepository.save(productColorOrdered);
-		
+
 		Timestamp currenTime = new Timestamp(System.currentTimeMillis());
 
 		Orders newOrder = new Orders();
@@ -77,8 +85,7 @@ public class ProductOrderController {
 		newOrder.setAllPrice(quantity * productColorOrdered.getProduct().getCasePrice());
 		newOrder.setPaymentDate(null);
 		newOrder.setOrderStatus(orderStatusRepository.findByStatus("To Pay"));
-		newOrder.setUserNameID(
-				usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)).getUserNameID());
+		newOrder.setUserNameID(currentUsername);
 		newOrder = ordersRepository.save(newOrder);
 
 		OrderDetail newOrderDetail = new OrderDetail();
@@ -103,7 +110,7 @@ public class ProductOrderController {
 		int currentUser = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)).getUserNameID();
 
 		Pageable sendPageRequest = PageRequest.of(page, size);
-		Page<Orders> result = ordersRepository.findByUserNameID(currentUser, sendPageRequest);
+		Page<Orders> result = ordersRepository.findAllByUserNameID(currentUser, sendPageRequest);
 
 		if (result.getTotalPages() < page + 1) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :(");
@@ -112,7 +119,32 @@ public class ProductOrderController {
 		return result;
 	}
 
-	// [ ListOrderByProductId ]
+	// [ ListAllOrders ]
+	public Page<Orders> ListAllOrders(int page, int size, String searchByUserName) {
+		if (page < 0) {
+			page = 0;
+		}
+		if (size < 1 || size > defaultSizeOrders) {
+			size = defaultSizeOrders;
+		}
+		int currentUser = 0;
+		Page<Orders> result;
+		Pageable sendPageRequest = PageRequest.of(page, size);
+		if (!searchByUserName.equals("")) {
+			if (usernameRepository.existsByUserNameIgnoreCase(searchByUserName)) {
+				currentUser = usernameRepository.findByUserName(searchByUserName).getUserNameID();
+				result = ordersRepository.findAllByUserNameID(currentUser, sendPageRequest);
+			} else {
+				throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :(");
+			}
+		} else {
+			result = ordersRepository.findAllByOrderByOrderIDDesc(sendPageRequest);
+		}
+		if (result.getTotalPages() < page + 1) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :(");
+		}
+		return result;
+	}
 
 	// [ addOrder ]
 	public ActionResponseModel addOrder(HttpServletRequest request, Orders orders) {
@@ -164,8 +196,7 @@ public class ProductOrderController {
 				throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ON_STORE,
 						"[ NOT ON STORE ] This item is not exist or not for sell.");
 			}
-			
-			
+
 			newOrder.setQuantityOrder(currentOrder.getQuantityOrder());
 			newOrder.setUnitPrice(targerProduct.get().getCasePrice());
 			newOrder.setOrders(addOrder);

@@ -1,11 +1,9 @@
 package swst.application.entities;
 
-import java.util.List;
-
 import javax.persistence.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import groovyjarjarantlr4.v4.runtime.misc.Nullable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,7 +21,7 @@ public class ProductsColor {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "caseID", nullable = false)
-	@JsonIgnore
+	@JsonBackReference
 	private Products product;
 
 	@ManyToOne
@@ -32,5 +30,5 @@ public class ProductsColor {
 
 	private String imageCase;
 	private int quantity;
-	
+
 }

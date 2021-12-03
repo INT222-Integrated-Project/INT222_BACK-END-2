@@ -22,7 +22,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import swst.application.controllers.ProductOrderController;
 import swst.application.controllers.UserController;
+import swst.application.entities.Orders;
 import swst.application.entities.UsernamesModels;
 import swst.application.entities.seperated.UserNameModelEdit;
 import swst.application.errorsHandlers.ExceptionFoundation;
@@ -39,6 +41,8 @@ public class AdminApi {
 
 	@Autowired
 	private final UserController userController;
+	@Autowired
+	private final ProductOrderController productOrderController;
 
 	// [ listUser]
 	@GetMapping("/listUser")
@@ -50,7 +54,8 @@ public class AdminApi {
 
 	// [ searchByTelephoneNumber ]
 	@GetMapping("/listUser/searchByPhone")
-	public ResponseEntity<Page<UsernamesModels>> searchByTelephoneNumber(@RequestParam(defaultValue = "") String phoneNumber) {
+	public ResponseEntity<Page<UsernamesModels>> searchByTelephoneNumber(
+			@RequestParam(defaultValue = "") String phoneNumber) {
 		return ResponseEntity.ok().body(userController.listUserByPhone(phoneNumber));
 	}
 
@@ -60,6 +65,14 @@ public class AdminApi {
 			@RequestParam int roleID) {
 		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/admin/assignRole").toString());
 		return ResponseEntity.created(uri).body(userController.assignRole(userNameID, roleID));
+	}
+
+	// [ listAllOrders ]
+	@GetMapping("/orders")
+	public ResponseEntity<Page<Orders>> listAllOrders(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "200") int size,
+			@RequestParam(defaultValue = "", required = false) String searchContent) {
+		return ResponseEntity.ok().body(productOrderController.ListAllOrders(page, size, searchContent));
 	}
 
 }

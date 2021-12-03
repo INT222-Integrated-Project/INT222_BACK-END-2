@@ -30,7 +30,7 @@ jobs:
       with:
         host: ${{ secrets.HOSTNAME }}
         username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.PRIVATEKEY }}
+        key: ${{ secrets.PASSWORD }}
         port: ${{ secrets.SERVERPORT }}
         script: |
           cd ./backend

@@ -1,0 +1,22 @@
+name: back-end CICD
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    needs:
+      - build
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOSTNAME }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.PRIVATEKEY }}
+        port: ${{ secrets.SERVERPORT }}
+        script:  
+          cd ./frontend 
+
+          
+    

@@ -4,17 +4,19 @@ services:
     container_name: backend
     build: .
     image: backend
-    networks:
-       int222:
-          ipv4_address: 172.10.0.3
     environment:
       - MYSQL_DATABASE=ProductCase
       - MYSQL_USER=test221
       - MYSQL_ROOT_PASSWORD=test
     volumes:
       - ~/imagestorage:/product-images
+    networks:
+       int222:
+          ipv4_address: 172.10.0.3
 
 networks:
   default:
     external:
-      name: int221_network
+       name: int222
+  int222:
+    external: true

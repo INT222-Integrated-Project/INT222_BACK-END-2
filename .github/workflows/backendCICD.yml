@@ -1,4 +1,4 @@
-name: back-end
+name: back-end CICD
 on:
   push:
     branches:
@@ -19,7 +19,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ghcr.io/int222-integrated-project/int222_back-end:master
+          tags: ghcr.io/int222-integrated-project/int222-BACK-END:master
 
   deploy:
     needs:
@@ -32,8 +32,8 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.PRIVATEKEY }}
         port: ${{ secrets.SERVERPORT }}
-        script: | 
-          cd ./backend 
-#          docker-compose down && docker-compose pull
-#         docker-compose up -d 
-#        docker image prune -af
+        script:  
+          cd ./back-end 
+
+          
+    

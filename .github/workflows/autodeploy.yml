@@ -1,16 +1,29 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
-name: Java CI with Maven
-
+name: back-end
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
+    branches:
+      - master
 jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ghcr.io/int222-integrated-project/int222_back-end:master
+
   deploy:
+    needs:
+      - build
     runs-on: ubuntu-20.04
     steps:
     - uses: appleboy/ssh-action@master
@@ -19,5 +32,8 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.PRIVATEKEY }}
         port: ${{ secrets.SERVERPORT }}
-        script:  
-           echo "Hello"
+        script: |
+          cd ./backend
+          docker-compose down && docker-compose pull
+          docker-compose up -d
+          docker image prune -af

@@ -14,8 +14,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.AllArgsConstructor;
 import swst.application.controllers.ProductOrderController;
+import swst.application.controllers.ProductsController;
 import swst.application.controllers.UserController;
 import swst.application.entities.Orders;
+import swst.application.entities.Products;
 import swst.application.entities.UsernamesModels;
 import swst.application.models.ActionResponseModel;
 
@@ -28,6 +30,16 @@ public class AdminApi {
 	private final UserController userController;
 	@Autowired
 	private final ProductOrderController productOrderController;
+	@Autowired
+	private final ProductsController productsController;
+
+	// [ listAllAvailableProduct ]
+	@GetMapping("/listProduct")
+	public ResponseEntity<Page<Products>> listAllAvailableProduct(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "50") int size,
+			@RequestParam(defaultValue = "", required = false) String searchContent) {
+		return ResponseEntity.ok().body(productsController.adminProductLister(page, size, searchContent));
+	}
 
 	// [ listUser]
 	@GetMapping("/listUser")
@@ -58,7 +70,7 @@ public class AdminApi {
 			@RequestParam(defaultValue = "200") int size,
 			@RequestParam(defaultValue = "", required = false) String searchContent,
 			@RequestParam(defaultValue = "", required = false) String searchStatus) {
-		return ResponseEntity.ok().body(productOrderController.ListAllOrders(page, size, searchContent,searchStatus));
+		return ResponseEntity.ok().body(productOrderController.ListAllOrders(page, size, searchContent, searchStatus));
 	}
 
 }

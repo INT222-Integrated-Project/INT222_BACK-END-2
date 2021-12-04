@@ -56,6 +56,25 @@ public class ProductsController {
 
 	@Value("${application.pagerequest.defaultsize.products}")
 	private int defaultSizeProduct;
+	
+	// [ adminProductLister ]
+	public Page<Products> adminProductLister(int page, int size, String searchContent){
+		if (page < 0) {
+			page = 0;
+		}
+		if (size < 1 || size > maxsizeProducts) {
+			size = defaultSizeProduct;
+		}
+		Pageable sendPageRequest = PageRequest.of(page, size);
+		Page<Products> result;
+
+		result = productsRepository.findBycaseNameContainingIgnoreCase(searchContent, sendPageRequest);
+		if (result.getTotalPages() < page + 1) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :(");
+		}
+
+		return result;
+	}
 
 	// [ createNewproduct ]
 	public Products createNewproduct(Products incoming, MultipartFile imageFile, HttpServletRequest request) {

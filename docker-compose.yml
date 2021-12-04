@@ -9,7 +9,7 @@ services:
       - MYSQL_USER=test221
       - MYSQL_ROOT_PASSWORD=test
     volumes:
-      - /home/Project222/imagestorage:/application/images/products
+      - ~/imagestorage:/application/images/products
     networks:
        int222:
           ipv4_address: 172.10.0.3

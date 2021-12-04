@@ -62,13 +62,15 @@ public class ProductOrderController {
 		ProductsColor productColorOrdered = productsColorRepository.findById(productColorid)
 				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 						"[ NOT FOUND ] This product is not exist."));
-		
-		int currentUsername = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)).getUserNameID();
-		
-		if(productColorOrdered.getProduct().getUsernameID() == currentUsername) {
-			throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_THIS_IS_YOUR_PRODUCT, "[ NOPE ] This is your product, just take it by hand.");
+
+		int currentUsername = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request))
+				.getUserNameID();
+
+		if (productColorOrdered.getProduct().getUsernameID() == currentUsername) {
+			throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_THIS_IS_YOUR_PRODUCT,
+					"[ NOPE ] This is your product, just take it by hand.");
 		}
-		
+
 		log.info(productColorOrdered.getQuantity() + "");
 		if (quantity > productColorOrdered.getQuantity()) {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SHOP_NOT_ENOUGH_GOODS_FOR_SELL,
@@ -120,7 +122,7 @@ public class ProductOrderController {
 	}
 
 	// [ ListAllOrders ]
-	public Page<Orders> ListAllOrders(int page, int size, String searchByUserName) {
+	public Page<Orders> ListAllOrders(int page, int size, String searchByUserName, String searchStatus) {
 		if (page < 0) {
 			page = 0;
 		}
@@ -130,12 +132,26 @@ public class ProductOrderController {
 		int currentUser = 0;
 		Page<Orders> result;
 		Pageable sendPageRequest = PageRequest.of(page, size);
-		if (!searchByUserName.equals("")) {
+
+		if (!searchByUserName.equals("") && !searchStatus.equals("")) {
 			if (usernameRepository.existsByUserNameIgnoreCase(searchByUserName)) {
 				currentUser = usernameRepository.findByUserName(searchByUserName).getUserNameID();
-				result = ordersRepository.findAllByUserNameID(currentUser, sendPageRequest);
+				OrderStatus currnetSearch = orderStatusRepository.findByStatus(searchStatus);
+				result = ordersRepository.findAllByOrderStatusAndUserNameID(currnetSearch, currentUser,	sendPageRequest);
 			} else {
 				throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :(");
+			}
+		} else if (!searchByUserName.equals("") || !searchStatus.equals("")) {
+			if (!searchByUserName.equals("")) {
+				if (usernameRepository.existsByUserNameIgnoreCase(searchByUserName)) {
+					currentUser = usernameRepository.findByUserName(searchByUserName).getUserNameID();
+					result = ordersRepository.findAllByUserNameID(currentUser, sendPageRequest);
+				} else {
+					throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND, "[ NOT FOUND ] Nothing here. :(");
+				}
+			} else {
+				OrderStatus currnetSearch = orderStatusRepository.findByStatus(searchStatus);
+				result = ordersRepository.findAllByOrderStatus(currnetSearch, sendPageRequest);
 			}
 		} else {
 			result = ordersRepository.findAllByOrderByOrderIDDesc(sendPageRequest);
@@ -253,7 +269,7 @@ public class ProductOrderController {
 	}
 
 	// [ changeOrderStatusByStaff]
-	public ActionResponseModel changeOrderStatusByStaff(long orderId, int statusId) {
+	public Orders changeOrderStatusByStaff(long orderId, int statusId) {
 		Orders currentOrder = ordersRepository.findById(orderId)
 				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 						"[ NOT FOUND ] Order with this ID is nit exist."));
@@ -274,9 +290,8 @@ public class ProductOrderController {
 		}
 
 		currentOrder.setOrderStatus(status);
-		ordersRepository.save(currentOrder);
-		return new ActionResponseModel(
-				"Change status for order " + currentOrder.getOrderID() + " to " + status.getStatus(), true);
+		currentOrder = ordersRepository.save(currentOrder);
+		return currentOrder;
 	}
 
 	// [ returnStockFromCancledOrder ]

@@ -71,8 +71,9 @@ public class AdminApi {
 	@GetMapping("/orders")
 	public ResponseEntity<Page<Orders>> listAllOrders(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "200") int size,
-			@RequestParam(defaultValue = "", required = false) String searchContent) {
-		return ResponseEntity.ok().body(productOrderController.ListAllOrders(page, size, searchContent));
+			@RequestParam(defaultValue = "", required = false) String searchContent,
+			@RequestParam(defaultValue = "", required = false) String searchStatus) {
+		return ResponseEntity.ok().body(productOrderController.ListAllOrders(page, size, searchContent,searchStatus));
 	}
 
 }

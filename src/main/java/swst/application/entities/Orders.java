@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.springframework.lang.Nullable;
 
@@ -57,10 +56,4 @@ public class Orders {
 	@JoinColumn(name = "userNameID",referencedColumnName = "userNameID",insertable = false, updatable = false)
 	private UsernamesModels user;
 	
-	/*
-	@ManyToOne
-	@Basic(optional = true)
-	@JoinColumn(name="modelID", referencedColumnName = "modelID")
-	private Models models;
-*/
 }

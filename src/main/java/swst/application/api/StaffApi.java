@@ -103,11 +103,12 @@ public class StaffApi {
 	}
 
 	// [ changeOrderStatus ]
-	@PutMapping("/changestatus/{orderId}/{statusID}")
-	public ResponseEntity<ActionResponseModel> changeOrderStatus(@PathVariable long orderId,
-			@PathVariable int statusID) {
+	@PutMapping("/changestatus")
+	public ResponseEntity<Orders> changeOrderStatus(
+			@RequestParam long orderId,
+			@RequestParam int statusID) {
 		URI uri = URI.create(
-				ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/changestatus/" + orderId).toString());
+				ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/changestatus").toString());
 		return ResponseEntity.created(uri).body(productOrderController.changeOrderStatusByStaff(orderId, statusID));
 	}
 

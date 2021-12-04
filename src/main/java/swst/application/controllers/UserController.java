@@ -1,6 +1,5 @@
 package swst.application.controllers;
 
-import java.time.LocalDate;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -18,17 +17,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import swst.application.authenSecurity.TokenUtills;
 import swst.application.entities.Roles;
 import swst.application.entities.UsernamesModels;
-import swst.application.entities.seperated.UserNameModelEdit;
 import swst.application.errorsHandlers.ExceptionFoundation;
 import swst.application.errorsHandlers.ExceptionresponsesModel;
 import swst.application.errorsHandlers.ExceptionresponsesModel.EXCEPTION_CODES;
 import swst.application.models.ActionResponseModel;
 import swst.application.models.CreateNewUserModel;
-import swst.application.models.GetUserModel;
 import swst.application.models.LoginModel;
 import swst.application.models.LoginResponseModel;
 import swst.application.repositories.RolesRepository;
@@ -37,7 +33,6 @@ import swst.application.services.FileStorageService;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class UserController {
 
 	@Autowired

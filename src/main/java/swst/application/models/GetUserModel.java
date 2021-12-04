@@ -1,7 +1,5 @@
 package swst.application.models;
 
-import javax.persistence.Basic;
-
 import lombok.Data;
 
 @Data

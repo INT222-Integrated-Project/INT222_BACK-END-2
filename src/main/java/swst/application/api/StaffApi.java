@@ -1,8 +1,6 @@
 package swst.application.api;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,18 +13,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import swst.application.authenSecurity.TokenUtills;
 import swst.application.controllers.ProductOrderController;
 import swst.application.controllers.ProductsController;
 import swst.application.entities.Orders;
@@ -37,7 +31,6 @@ import swst.application.models.ActionResponseModel;
 @RequestMapping("/staff")
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class StaffApi {
 
 	@Autowired

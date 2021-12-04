@@ -27,15 +27,12 @@ import swst.application.controllers.UserController;
 import swst.application.entities.Brands;
 import swst.application.entities.Colors;
 import swst.application.entities.Models;
-import swst.application.entities.ProductModel;
 import swst.application.entities.Products;
 import swst.application.entities.ProductsColor;
 import swst.application.models.CreateNewUserModel;
 import swst.application.models.LoginModel;
 import swst.application.repositories.BrandsRepository;
 import swst.application.repositories.ColorsRepository;
-import swst.application.repositories.ProductsColorRepository;
-import swst.application.repositories.ProductsRepository;
 import swst.application.services.FileStorageService;
 
 @RestController
@@ -54,9 +51,6 @@ public class PublicVisitorApi {
 	private final BrandsRepository brandRepository;
 	@Autowired
 	private final FileStorageService fileStorageService;
-
-	@Autowired
-	private final ProductsColorRepository productsColorRepository;
 
 	// [ getUserProfileImage ]
 	@GetMapping(value = "/profileimage/{imageFileName}", produces = { MediaType.IMAGE_JPEG_VALUE,

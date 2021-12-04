@@ -10,14 +10,12 @@ import java.time.LocalDate;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
-import javax.mail.internet.ContentType;
 
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.thymeleaf.util.ContentTypeUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import swst.application.errorsHandlers.ExceptionFoundation;

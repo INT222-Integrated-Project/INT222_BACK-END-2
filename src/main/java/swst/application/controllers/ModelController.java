@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import lombok.extern.slf4j.Slf4j;
 import swst.application.entities.Models;
 import swst.application.errorsHandlers.ExceptionFoundation;
 import swst.application.errorsHandlers.ExceptionresponsesModel.EXCEPTION_CODES;
@@ -16,7 +15,6 @@ import swst.application.repositories.ModelsRepository;
 
 @Service
 @PropertySource("userdefined.properties")
-@Slf4j
 public class ModelController {
 
 	@Autowired

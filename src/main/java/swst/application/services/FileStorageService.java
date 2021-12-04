@@ -27,7 +27,7 @@ import swst.application.errorsHandlers.ExceptionresponsesModel.EXCEPTION_CODES;
 public class FileStorageService {
 
 	private final String methods = "[ POST CONSTRUCT ]";
-	private final String mainFolder = "application/images/";
+	private final String mainFolder = "./application/images/";
 	// DO NOT CHANGE THIS VALUE.
 	private final String[] folderList = new String[] { "products", "profiles", "models", "product-colors" };
 

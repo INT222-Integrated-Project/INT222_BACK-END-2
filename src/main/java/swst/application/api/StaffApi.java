@@ -39,7 +39,8 @@ public class StaffApi {
 	private final ProductOrderController productOrderController;
 
 	// [ createNewproduct ]
-	@PostMapping(value = "/products", produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.IMAGE_PNG_VALUE,MediaType.IMAGE_JPEG_VALUE})
+	@PostMapping(value = "/products", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.IMAGE_PNG_VALUE,
+			MediaType.IMAGE_JPEG_VALUE })
 	public ResponseEntity<Products> createNewproduct(@RequestPart Products newProducts,
 			@RequestPart(value = "imageFile") MultipartFile imageFile, HttpServletRequest request) {
 		productsController.createNewproduct(newProducts, imageFile, request);
@@ -47,11 +48,13 @@ public class StaffApi {
 				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/product/add").toString());
 		return ResponseEntity.created(uri).body(newProducts);
 	}
-	
+
 	// [ deleteProduct ]
 	@DeleteMapping("/products")
-	public ResponseEntity<ActionResponseModel> deleteProduct(@RequestParam(name = "productId") int id, HttpServletRequest request){
-		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/product/"+id).toString());
+	public ResponseEntity<ActionResponseModel> deleteProduct(@RequestParam(name = "productId") int id,
+			HttpServletRequest request) {
+		URI uri = URI
+				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/product/" + id).toString());
 		return ResponseEntity.created(uri).body(productsController.deleteProductById(id, request));
 	}
 
@@ -62,8 +65,8 @@ public class StaffApi {
 
 	// [ toggleOnStore ]
 	@PutMapping("/product/onstore")
-	public ResponseEntity<ActionResponseModel> toggleOnStore(@RequestParam int productId, HttpServletRequest request) {
-		ActionResponseModel action = productsController.toggleProduct(productId, request);
+	public ResponseEntity<Products> toggleOnStore(@RequestParam int productId, HttpServletRequest request) {
+		Products action = productsController.toggleProduct(productId, request);
 		URI uri = URI
 				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/product/onstore").toString());
 		return ResponseEntity.created(uri).body(action);
@@ -97,11 +100,9 @@ public class StaffApi {
 
 	// [ changeOrderStatus ]
 	@PutMapping("/changestatus")
-	public ResponseEntity<Orders> changeOrderStatus(
-			@RequestParam long orderId,
-			@RequestParam int statusID) {
-		URI uri = URI.create(
-				ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/changestatus").toString());
+	public ResponseEntity<Orders> changeOrderStatus(@RequestParam long orderId, @RequestParam int statusID) {
+		URI uri = URI
+				.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/staff/changestatus").toString());
 		return ResponseEntity.created(uri).body(productOrderController.changeOrderStatusByStaff(orderId, statusID));
 	}
 

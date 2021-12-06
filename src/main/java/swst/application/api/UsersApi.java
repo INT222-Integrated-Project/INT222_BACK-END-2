@@ -55,7 +55,7 @@ public class UsersApi {
 
 	// [ cancleUserOrder ]
 	@PutMapping("/cancleorder")
-	public ResponseEntity<ActionResponseModel> cancleOrder(@RequestParam long orderId, HttpServletRequest request) {
+	public ResponseEntity<Orders> cancleOrder(@RequestParam long orderId, HttpServletRequest request) {
 		URI uri = URI.create(
 				ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/cancleorder/" + orderId).toString());
 		return ResponseEntity.created(uri).body(productOrderController.cancelOrder(orderId, request));

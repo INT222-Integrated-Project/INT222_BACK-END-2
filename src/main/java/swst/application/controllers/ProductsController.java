@@ -1,6 +1,7 @@
 package swst.application.controllers;
 
 import java.time.LocalDate;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -223,6 +224,13 @@ public class ProductsController {
 				: incoming.getCaseDescription()));
 		editProduct.setModels((incoming.getModels()));
 		editProduct.setCasePrice((incoming.getCasePrice() == 0 ? editProduct.getCasePrice() : incoming.getCasePrice()));
+		
+		for (int i = 0; i < incoming.getProductColor().size(); i++) {
+			ProductsColor current = incoming.getProductColor().get(i);
+			current.setProduct(editProduct);
+			productsColorRepository.save(current);
+		}
+		
 		editProduct = productsRepository.save(editProduct);
 
 		if (file != null) {
@@ -261,7 +269,7 @@ public class ProductsController {
 	}
 
 	// [ toggleProduct ]
-	public ActionResponseModel toggleProduct(int productId, HttpServletRequest request) {
+	public Products toggleProduct(int productId, HttpServletRequest request) {
 		UsernamesModels owner = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
 		Roles userRole = owner.getRole();
 		if (userRole == roleRepository.findByroleName("admin") || owner.getUserNameID() == productId) {
@@ -271,12 +279,11 @@ public class ProductsController {
 			if (!setOnStore.getIsOnStore()) {
 				setOnStore.setIsOnStore(true);
 				productsRepository.save(setOnStore);
-				return new ActionResponseModel("[SET] This product is now on store page!", true);
-
+				return setOnStore;
 			} else {
 				setOnStore.setIsOnStore(false);
 				productsRepository.save(setOnStore);
-				return new ActionResponseModel("[SET] This product is now removed!", true);
+				return setOnStore;
 			}
 		} else {
 			throw new ExceptionFoundation(EXCEPTION_CODES.SAVE_NOT_THE_OWNER,

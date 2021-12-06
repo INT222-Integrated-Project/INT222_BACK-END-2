@@ -244,7 +244,7 @@ public class ProductOrderController {
 	}
 
 	// [ cancelOrder ]
-	public ActionResponseModel cancelOrder(long orderId, HttpServletRequest request) {
+	public Orders cancelOrder(long orderId, HttpServletRequest request) {
 
 		UsernamesModels currentUserName = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request));
 
@@ -265,7 +265,7 @@ public class ProductOrderController {
 				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 						"[ NOT FOUND ] This status with this ID is not exist.")));
 		ordersRepository.save(currentOrder);
-		return new ActionResponseModel("Cencelled", true);
+		return currentOrder;
 	}
 
 	// [ changeOrderStatusByStaff]

@@ -54,6 +54,7 @@ public class UsersApi {
 	// [ uploadProfileImage ]
 	
 	// [ ListOrderedOrderByUserID ]
+	@GetMapping("/mycart")
 	public ResponseEntity<Page<Orders>> ListOrderedOrderByUserID(HttpServletRequest httpServletRequest){
 		return ResponseEntity.ok().body(productOrderController.ListOrderedOrderByUserID(httpServletRequest));
 	}

@@ -52,6 +52,11 @@ public class UsersApi {
 	}
 
 	// [ uploadProfileImage ]
+	
+	// [ ListOrderedOrderByUserID ]
+	public ResponseEntity<Page<Orders>> ListOrderedOrderByUserID(HttpServletRequest httpServletRequest){
+		return ResponseEntity.ok().body(productOrderController.ListOrderedOrderByUserID(httpServletRequest));
+	}
 
 	// [ cancleUserOrder ]
 	@PutMapping("/cancleorder")

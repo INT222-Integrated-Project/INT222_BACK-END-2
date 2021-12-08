@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import swst.application.authenSecurity.TokenUtills;
 import swst.application.entities.Roles;
 import swst.application.entities.UsernamesModels;
@@ -33,6 +34,7 @@ import swst.application.services.FileStorageService;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
 	@Autowired
@@ -189,10 +191,6 @@ public class UserController {
 		UsernamesModels assignTo = usernameRepository.findById(userNameID)
 				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 						"[ NOT EXIST] This user is not exist in our database."));
-		if (assignTo == null) {
-			throw new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
-					"[ NOT EXIST] This user is not exist in our database.");
-		}
 		assignTo.setRole(rolesRepository.findById(roleID)
 				.orElseThrow(() -> new ExceptionFoundation(EXCEPTION_CODES.SEARCH_NOT_FOUND,
 						"[ NOT EXIST] This user is not exist in our database.")));

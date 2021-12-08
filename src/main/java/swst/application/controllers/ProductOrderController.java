@@ -3,7 +3,6 @@ package swst.application.controllers;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +118,15 @@ public class ProductOrderController {
 		}
 
 		return result;
+	}
+	
+	// [ ListOrderedOrderByUserID ]
+	public Page<Orders> ListOrderedOrderByUserID(HttpServletRequest request){
+		int currentUser = usernameRepository.findByUserName(TokenUtills.getUserNameFromToken(request)).getUserNameID();
+		OrderStatus orderStatus = orderStatusRepository.findByStatus("To Pay");
+		Pageable sendPageRequest = PageRequest.of(0, defaultSizeOrders);
+		Page<Orders> orderedOrder = ordersRepository.findAllByOrderStatusAndUserNameID(orderStatus,currentUser,sendPageRequest);
+		return orderedOrder;
 	}
 
 	// [ ListAllOrders ]

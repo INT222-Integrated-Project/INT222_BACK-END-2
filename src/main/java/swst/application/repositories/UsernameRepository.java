@@ -23,4 +23,5 @@ public interface UsernameRepository extends JpaRepository<UsernamesModels, Integ
 
 	@Query(value = "SELECT u FROM UsernamesModels u WHERE u.phoneNumber LIKE ?1% ORDER BY u.userNameID DESC")
 	Page<UsernamesModels> findByPhoneNumber(String searchContent,Pageable pageable);
+	
 }

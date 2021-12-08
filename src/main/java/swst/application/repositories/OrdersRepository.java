@@ -27,6 +27,6 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
 
 	@Query(value = "SELECT o FROM Orders o WHERE o.orderStatus = ?1 AND o.userNameID = ?2 ORDER BY orderID DESC")
 	Page<Orders> findAllByOrderStatusAndUserNameID(OrderStatus orderStatus, int userNameID, Pageable pageable);
-
+		
 	boolean existsByUserNameID(int userNameID);
 }
